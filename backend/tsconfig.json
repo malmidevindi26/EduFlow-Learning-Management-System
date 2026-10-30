@@ -19,6 +19,7 @@
     "strictNullChecks": true,
     "forceConsistentCasingInFileNames": true,
     "noImplicitAny": true,
+    "strictPropertyInitialization": false,
     "strictBindCallApply": true,
     "noFallthroughCasesInSwitch": true
   }

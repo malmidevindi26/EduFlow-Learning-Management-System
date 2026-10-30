@@ -30,11 +30,4 @@ export class AuthController {
     return user;
   }
 
-  // Temporary route
-  @UseGuards(JwtAuthGuard, RolesGuard)
-  @Roles(Role.ADMIN)
-  @Get('admin-check')
-  adminCheck() {
-    return { message: 'You are an admin' };
-  }
 }

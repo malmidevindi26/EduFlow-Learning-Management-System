@@ -32,6 +32,11 @@ enum EnrollmentStatus {
   DROPPED
 }
 
+enum SubmissionStatus{
+  SUBMITTED
+  GRADED
+}
+
 model User {
   id           String   @id @default(uuid())
   email        String   @unique
@@ -41,6 +46,7 @@ model User {
   isActive     Boolean  @default(true)
   courses      Course[] @relation("InstructorCourses")
   enrollments  Enrollment[]
+  submissions Submission[]
   createdAt    DateTime @default(now())
   updatedAt    DateTime @updatedAt
 }
@@ -67,6 +73,7 @@ model Course{
   category     Category  @relation(fields: [categoryId], references: [id])
   lessons      Lesson[]
   enrollments  Enrollment[]
+  assignments Assignment[]
   createdAt    DateTime @default(now())
   updatedAt    DateTime @updatedAt
 
@@ -115,3 +122,37 @@ model LessonProgress{
 
   @@unique([enrollmentId, lessonId])
 } 
+
+model Assignment {
+  id          String       @id @default(uuid())
+  title       String
+  description String
+  dueDate     DateTime
+  maxMarks    Int
+  courseId    String
+  course      Course       @relation(fields: [courseId], references: [id], onDelete: Cascade)
+  submissions Submission[]
+  createdAt   DateTime     @default(now())
+  updatedAt   DateTime     @updatedAt
+
+  @@index([courseId])
+}
+
+model Submission {
+  id           String           @id @default(uuid())
+  assignmentId String
+  assignment   Assignment       @relation(fields: [assignmentId], references: [id], onDelete: Cascade)
+  studentId    String
+  student      User             @relation(fields: [studentId], references: [id], onDelete: Cascade)
+  answerText   String?
+  fileUrl      String?
+  submittedAt  DateTime         @default(now())
+  isLate       Boolean          @default(false)
+  marks        Int?
+  feedback     String?
+  status       SubmissionStatus @default(SUBMITTED)
+  gradedAt     DateTime?
+
+  @@unique([assignmentId, studentId])
+  @@index([studentId])
+}

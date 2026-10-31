@@ -6,8 +6,9 @@ import { RolesGuard } from '../auth/guards/roles.guard';
 import { CategoriesService } from './categories.service';
 import { CreateCategoryDto } from './dto/create-category.dto';
 import { UpdateCategoryDto } from './dto/update-category.dto';
+import { ApiBearerAuth, ApiTags } from '@nestjs/swagger';
 
-
+@ApiTags('categories')
 @Controller('categories')
 export class CategoriesController {
     constructor(private readonly categories: CategoriesService){}
@@ -17,6 +18,7 @@ export class CategoriesController {
         return this.categories.findAll()
     }
 
+    @ApiBearerAuth()
     @UseGuards(JwtAuthGuard, RolesGuard)
     @Roles(Role.ADMIN)
     @Post()
@@ -24,6 +26,7 @@ export class CategoriesController {
         return this.categories.create(dto)
     }
 
+    @ApiBearerAuth()
     @UseGuards(JwtAuthGuard, RolesGuard)
     @Roles(Role.ADMIN)
     @Patch(':id')
@@ -34,6 +37,7 @@ export class CategoriesController {
         return this.categories.update(id, dto)
     }
 
+    @ApiBearerAuth()
     @UseGuards(JwtAuthGuard, RolesGuard)
     @Roles(Role.ADMIN)
     @Delete(':id')

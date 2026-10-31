@@ -17,7 +17,10 @@ import type { JwtUser } from '../auth/types/jwt-user';
 import { CreateLessonDto } from './dto/create-lesson.dto';
 import { UpdateLessonDto } from './dto/update-lesson.dto';
 import { LessonsService } from './lessons.service';
+import { ApiBearerAuth, ApiTags } from '@nestjs/swagger';
 
+@ApiTags('lessons')
+@ApiBearerAuth()
 @Controller()
 @UseGuards(JwtAuthGuard, RolesGuard)
 @Roles(Role.INSTRUCTOR)

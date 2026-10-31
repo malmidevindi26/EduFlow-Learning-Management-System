@@ -13,7 +13,10 @@ import { ChangeStatusDto } from './dto/change-status.dto';
 import { CreateCourseDto } from './dto/create-course.dto';
 import { QueryCoursesDto } from './dto/query-courses.dto';
 import { UpdateCourseDto } from './dto/update-course.dto';
+import { ApiBearerAuth, ApiTags } from '@nestjs/swagger';
 
+
+@ApiTags('courses')
 @Controller('courses')
 export class CoursesController {
     constructor(private readonly courses: CoursesService){}
@@ -23,6 +26,7 @@ export class CoursesController {
         return this.courses.findAll(query)
     }
 
+    @ApiBearerAuth()
     @UseGuards(JwtAuthGuard, RolesGuard)
     @Roles(Role.INSTRUCTOR)
     @Get('mine')
@@ -30,6 +34,7 @@ export class CoursesController {
         return this.courses.findMine(user)
     }
 
+    @ApiBearerAuth()
     @UseGuards(JwtAuthGuard, RolesGuard)
     @Roles(Role.ADMIN)
     @Get('pending')
@@ -46,6 +51,7 @@ export class CoursesController {
         return this.courses.findOne(id, user)
     }
 
+    @ApiBearerAuth()
     @UseGuards(JwtAuthGuard, RolesGuard)
     @Roles(Role.INSTRUCTOR)
     @Post()
@@ -53,6 +59,7 @@ export class CoursesController {
         return this.courses.create(dto, user)
     }
 
+    @ApiBearerAuth()
     @UseGuards(JwtAuthGuard, RolesGuard)
     @Roles(Role.INSTRUCTOR, Role.ADMIN)
     @Patch(':id')
@@ -64,6 +71,8 @@ export class CoursesController {
         return this.courses.update(id, dto, user)
     }
 
+
+    @ApiBearerAuth()
     @UseGuards(JwtAuthGuard, RolesGuard)
     @Roles(Role.INSTRUCTOR, Role.ADMIN)
     @Patch(':id/status')
@@ -75,6 +84,8 @@ export class CoursesController {
         return this.courses.changeStatus(id, dto.status, user)
     }
 
+
+    @ApiBearerAuth()
     @UseGuards(JwtAuthGuard, RolesGuard)
     @Roles(Role.INSTRUCTOR, Role.ADMIN)
     @Delete(':id')

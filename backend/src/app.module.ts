@@ -8,9 +8,10 @@ import { AuthModule } from './auth/auth.module';
 import { CategoriesModule } from './categories/categories.module';
 import { CoursesModule } from './courses/courses.module';
 import { LessonsModule } from './lessons/lessons.module';
+import { EnrollmentsModule } from './enrollments/enrollments.module';
 
 @Module({
-  imports: [ ConfigModule.forRoot({ isGlobal: true}) ,PrismaModule, UsersModule, AuthModule, CategoriesModule, CoursesModule, LessonsModule],
+  imports: [ ConfigModule.forRoot({ isGlobal: true}) ,PrismaModule, UsersModule, AuthModule, CategoriesModule, CoursesModule, LessonsModule, EnrollmentsModule],
   controllers: [AppController],
   providers: [AppService],
 })

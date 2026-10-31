@@ -26,6 +26,12 @@ enum CourseStatus{
   ARCHIVED
 }
 
+enum EnrollmentStatus {
+  ACTIVE
+  COMPLETED
+  DROPPED
+}
+
 model User {
   id           String   @id @default(uuid())
   email        String   @unique
@@ -34,6 +40,7 @@ model User {
   role         Role     @default(STUDENT)
   isActive     Boolean  @default(true)
   courses      Course[] @relation("InstructorCourses")
+  enrollments  Enrollment[]
   createdAt    DateTime @default(now())
   updatedAt    DateTime @updatedAt
 }
@@ -52,13 +59,14 @@ model Course{
   title        String
   description  String
   level        CourseLevel @default(BEGINNER)
-  thumbnaiUrl  String?
+  thumbnailUrl String?
   status       CourseStatus @default(DRAFT)
   instructorId String
   instructor   User      @relation("InstructorCourses", fields: [instructorId], references: [id])
   categoryId   String
   category     Category  @relation(fields: [categoryId], references: [id])
   lessons      Lesson[]
+  enrollments  Enrollment[]
   createdAt    DateTime @default(now())
   updatedAt    DateTime @updatedAt
 
@@ -76,8 +84,34 @@ model Lesson{
   position  Int
   courseId  String
   course    Course @relation(fields: [courseId], references: [id], onDelete: Cascade)
+  progress  LessonProgress[]
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
   @@index([courseId, position])
 }
+
+model Enrollment{
+  id      String      @id @default(uuid())
+  userId  String
+  user    User        @relation(fields: [userId], references: [id], onDelete: Cascade)
+  courseId String
+  course   Course     @relation(fields: [courseId], references: [id], onDelete: Cascade)
+  status   EnrollmentStatus    @default(ACTIVE)
+  enrolledAt DateTime          @default(now())
+  progress   LessonProgress[]
+
+  @@unique([userId, courseId])
+  @@index([courseId])
+}
+
+model LessonProgress{
+  id              String     @id @default(uuid())
+  enrollmentId    String
+  enrollment      Enrollment @relation(fields: [enrollmentId], references: [id], onDelete: Cascade)
+  lessonId        String
+  lesson          Lesson     @relation(fields: [lessonId], references: [id], onDelete: Cascade)
+  completedAt     DateTime   @default(now())
+
+  @@unique([enrollmentId, lessonId])
+} 

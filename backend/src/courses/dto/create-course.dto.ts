@@ -24,7 +24,7 @@ export class CreateCourseDto{
 
     @IsOptional()
     @IsUrl()
-    thumbnaiUrl?: string;
+    thumbnailUrl?: string;
 
     @IsUUID()
     categoryId: string

@@ -12,9 +12,10 @@ import { EnrollmentsModule } from './enrollments/enrollments.module';
 import { AssignmentsModule } from './assignments/assignments.module';
 import { ReviewsModule } from './reviews/reviews.module';
 import { StatsModule } from './stats/stats.module';
+import { UploadsModule } from './uploads/uploads.module';
 
 @Module({
-  imports: [ ConfigModule.forRoot({ isGlobal: true}) ,PrismaModule, UsersModule, AuthModule, CategoriesModule, CoursesModule, LessonsModule, EnrollmentsModule, AssignmentsModule, ReviewsModule, StatsModule],
+  imports: [ ConfigModule.forRoot({ isGlobal: true}) ,PrismaModule, UsersModule, AuthModule, CategoriesModule, CoursesModule, LessonsModule, EnrollmentsModule, AssignmentsModule, ReviewsModule, StatsModule, UploadsModule],
   controllers: [AppController],
   providers: [AppService],
 })

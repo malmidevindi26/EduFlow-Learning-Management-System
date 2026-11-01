@@ -6,6 +6,7 @@ import {
   IsUrl,
   MaxLength,
   Min,
+  Matches
 } from 'class-validator';
 
 export class CreateLessonDto{
@@ -23,7 +24,9 @@ export class CreateLessonDto{
     videoUrl?: string
 
     @IsOptional()
-    @IsString()
+    @Matches(/^\/uploads\/[A-Za-z0-9._-]+$/, {
+    message: 'fileUrl must be a file uploaded through /api/uploads',
+    })
     fileUrl?: string
 
     @IsOptional()

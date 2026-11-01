@@ -10,9 +10,11 @@ import { CoursesModule } from './courses/courses.module';
 import { LessonsModule } from './lessons/lessons.module';
 import { EnrollmentsModule } from './enrollments/enrollments.module';
 import { AssignmentsModule } from './assignments/assignments.module';
+import { ReviewsModule } from './reviews/reviews.module';
+import { StatsModule } from './stats/stats.module';
 
 @Module({
-  imports: [ ConfigModule.forRoot({ isGlobal: true}) ,PrismaModule, UsersModule, AuthModule, CategoriesModule, CoursesModule, LessonsModule, EnrollmentsModule, AssignmentsModule],
+  imports: [ ConfigModule.forRoot({ isGlobal: true}) ,PrismaModule, UsersModule, AuthModule, CategoriesModule, CoursesModule, LessonsModule, EnrollmentsModule, AssignmentsModule, ReviewsModule, StatsModule],
   controllers: [AppController],
   providers: [AppService],
 })

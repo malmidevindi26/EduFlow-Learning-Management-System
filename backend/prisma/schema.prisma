@@ -47,6 +47,7 @@ model User {
   courses      Course[] @relation("InstructorCourses")
   enrollments  Enrollment[]
   submissions Submission[]
+  reviews Review[]
   createdAt    DateTime @default(now())
   updatedAt    DateTime @updatedAt
 }
@@ -74,6 +75,7 @@ model Course{
   lessons      Lesson[]
   enrollments  Enrollment[]
   assignments Assignment[]
+  reviews Review[]
   createdAt    DateTime @default(now())
   updatedAt    DateTime @updatedAt
 
@@ -155,4 +157,19 @@ model Submission {
 
   @@unique([assignmentId, studentId])
   @@index([studentId])
+}
+
+model Review {
+  id        String   @id @default(uuid())
+  courseId  String
+  course    Course   @relation(fields: [courseId], references: [id], onDelete: Cascade)
+  userId    String
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  rating    Int
+  comment   String?
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@unique([courseId, userId])
+  @@index([courseId])
 }

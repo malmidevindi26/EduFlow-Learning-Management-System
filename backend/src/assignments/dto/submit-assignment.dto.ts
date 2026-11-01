@@ -1,4 +1,4 @@
-import { IsOptional, IsString } from 'class-validator';
+import { IsOptional, IsString, Matches } from 'class-validator';
 
 export class SubmitAssignmentDto{
   @IsOptional()
@@ -6,6 +6,8 @@ export class SubmitAssignmentDto{
   answerText?: string;
 
   @IsOptional()
-  @IsString()
+  @Matches(/^\/uploads\/[A-Za-z0-9._-]+$/, {
+  message: 'fileUrl must be a file uploaded through /api/uploads',
+  })
   fileUrl?: string;
 }

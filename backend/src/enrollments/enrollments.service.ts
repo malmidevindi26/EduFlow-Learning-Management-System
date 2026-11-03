@@ -156,6 +156,29 @@ export class EnrollmentsService {
     return { lessonId, completedLessons: done, totalLessons: total, progress, status };
   }
 
+    async getCourseProgress(courseId: string, user: JwtUser) {
+    const enrollment = await this.findEnrollment(user.id, courseId);
+    if (!enrollment || enrollment.status === EnrollmentStatus.DROPPED) {
+      throw new ForbiddenException('You are not enrolled in this course');
+    }
+
+    const [total, done] = await Promise.all([
+      this.prisma.lesson.count({ where: { courseId } }),
+      this.prisma.lessonProgress.findMany({
+        where: { enrollmentId: enrollment.id },
+        select: { lessonId: true },
+      }),
+    ]);
+
+    return {
+      status: enrollment.status,
+      completedLessonIds: done.map((d) => d.lessonId),
+      completedLessons: done.length,
+      totalLessons: total,
+      progress: percent(done.length, total),
+    };
+  }
+
   async getCourseStudents(courseId: string, user: JwtUser) {
     const course = await this.prisma.course.findUnique({
       where: { id: courseId },
@@ -185,4 +208,6 @@ export class EnrollmentsService {
       progress: percent(e._count.progress, total),
     }));
   }
+
+  
 }

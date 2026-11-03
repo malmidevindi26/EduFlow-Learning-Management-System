@@ -11,7 +11,7 @@ import { StatsService } from './stats.service';
 
 @ApiTags('stats')
 @ApiBearerAuth()
-@Controller('stats')
+@Controller()
 export class StatsController {
     constructor(private readonly stats: StatsService){}
 

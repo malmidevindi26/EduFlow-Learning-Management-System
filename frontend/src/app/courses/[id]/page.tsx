@@ -1,30 +1,32 @@
-import { BarChart3, BookOpen, ChevronLeft, Layers } from 'lucide-react';
+import { ChevronLeft } from 'lucide-react';
 import Link from 'next/link';
 import { notFound } from 'next/navigation';
+import EnrollPanel from '@/components/EnrollPanel';
+import ReviewSection from '@/components/ReviewSection';
 import { ApiError, apiFetch } from '@/lib/server-api';
 import type { CourseDetails, ReviewsResponse } from '@/lib/types';
 
 export default async function CourseDetailsPage({
-    params,
+  params,
 }: {
-    params: Promise<{ id: string }>
+  params: Promise<{ id: string }>;
 }) {
-    const { id } = await params
+  const { id } = await params;
 
-    let course: CourseDetails
-    try{
-        course = await apiFetch<CourseDetails>(`/courses/${id}`)
-    }catch(err){
-        if(err instanceof ApiError && (err.status === 400 || err.status === 404)){
-            notFound()
-        }
-        throw err
+  let course: CourseDetails;
+  try {
+    course = await apiFetch<CourseDetails>(`/courses/${id}`);
+  } catch (error) {
+    if (error instanceof ApiError && (error.status === 400 || error.status === 404)) {
+      notFound();
     }
+    throw error;
+  }
 
-    const reviews = await apiFetch<ReviewsResponse>(`/courses/${id}/reviews`).catch(() => null)
-    const level = course.level.charAt(0) + course.level.slice(1).toLowerCase()
+  const reviews = await apiFetch<ReviewsResponse>(`/courses/${id}/reviews`).catch(() => null);
+  const level = course.level.charAt(0) + course.level.slice(1).toLowerCase();
 
-    return (
+  return (
     <div>
       {/* Banner */}
       <section className="bg-gradient-to-br from-slate-900 via-blue-900 to-indigo-900 text-white">
@@ -80,57 +82,17 @@ export default async function CourseDetailsPage({
             )}
           </section>
 
-          <section className="rounded-2xl border border-slate-200 bg-white p-6 shadow-sm">
-            <h2 className="text-lg font-semibold">Reviews</h2>
-            {!reviews || reviews.items.length === 0 ? (
-              <p className="mt-3 text-sm text-slate-500">No reviews yet.</p>
-            ) : (
-              <ul className="mt-4 space-y-4">
-                {reviews.items.map((review) => (
-                  <li key={review.id} className="border-b border-slate-100 pb-4 last:border-0 last:pb-0">
-                    <div className="flex items-center gap-2">
-                      <span className="flex h-8 w-8 items-center justify-center rounded-full bg-slate-100 text-sm font-semibold text-slate-600">
-                        {review.user.name.charAt(0).toUpperCase()}
-                      </span>
-                      <div>
-                        <p className="text-sm font-medium">{review.user.name}</p>
-                        <p className="text-xs text-amber-500">
-                          {'★'.repeat(review.rating)}
-                          <span className="text-slate-300">{'★'.repeat(5 - review.rating)}</span>
-                        </p>
-                      </div>
-                    </div>
-                    {review.comment && <p className="mt-2 text-sm text-slate-600">{review.comment}</p>}
-                  </li>
-                ))}
-              </ul>
-            )}
-          </section>
+          <ReviewSection courseId={course.id} reviews={reviews} />
         </div>
 
         {/* Sidebar */}
         <aside>
-          <div className="sticky top-24 rounded-2xl border border-slate-200 bg-white p-6 shadow-sm">
-            <p className="text-sm text-slate-600">Log in as a student to enroll in this course.</p>
-            <Link
-              href="/login"
-              className="mt-4 block rounded-lg bg-blue-600 py-2.5 text-center font-medium text-white transition hover:bg-blue-700"
-            >
-              Log in to enroll
-            </Link>
-
-            <ul className="mt-6 space-y-3 border-t border-slate-100 pt-5 text-sm text-slate-600">
-              <li className="flex items-center gap-3">
-                <BookOpen size={16} className="text-blue-600" /> {course.lessons.length} lessons
-              </li>
-              <li className="flex items-center gap-3">
-                <BarChart3 size={16} className="text-blue-600" /> {level} level
-              </li>
-              <li className="flex items-center gap-3">
-                <Layers size={16} className="text-blue-600" /> {course.category.name}
-              </li>
-            </ul>
-          </div>
+          <EnrollPanel
+            courseId={course.id}
+            lessonCount={course.lessons.length}
+            level={level}
+            category={course.category.name}
+          />
         </aside>
       </div>
     </div>

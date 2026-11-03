@@ -67,3 +67,73 @@ export interface ReviewsResponse {
     count: number
     items: Review[]
 }
+
+export type EnrollmentStatus = 'ACTIVE' | 'COMPLETED' | 'DROPPED'
+
+export interface EnrollmentItem {
+    id: string
+    status: EnrollmentStatus
+    enrolledAt: string
+    course: {
+        id: string
+        title: string
+        thumbnailUrl: string | null
+        level: CourseLevel
+        category: { id: string; name: string }
+        instructor: { id: string; name: string }
+    };
+    completedLessons: number
+    totalLessons: number
+    progress: number
+}
+
+export interface CourseProgress{
+    status: EnrollmentStatus
+    completedLessonIds: string[]
+    completedLessons: number
+    totalLessons: number
+    progress: number 
+}
+
+export interface LessonContent{
+    id: string
+    title: string
+    content: string
+    videoUrl: string | null
+    fileUrl: string | null
+    position: number
+    courseId: string
+    completed: boolean
+}
+
+export interface Assignment{
+    id: string
+    title: string
+    description:  string
+    dueDate: string
+    maxMarks: number
+    courseId: string
+}
+
+export interface Submission {
+    id: string
+    assignmentId: string
+    answerText: string | null
+    fileUrl: string | null
+    submittedAt: string
+    isLate: boolean
+    marks: number | null
+    feedback: string | null
+    status: 'SUBMITTED' | 'GRADED'
+    gradeAt: string | null
+}
+
+export interface MySubmission extends Submission{
+    assignment: {
+        id: string
+        title: string
+        dueDate: string
+        maxMarks: number
+        course: { id: string; title: string }
+    }
+}

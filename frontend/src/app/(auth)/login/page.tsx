@@ -30,7 +30,7 @@ export default function LoginPage() {
     }
 
     return (
-    <main className="mx-auto flex min-h-screen max-w-md flex-col justify-center px-6">
+    <main className="mx-auto flex min-h-[70vh] py-10 max-w-md flex-col justify-center px-6">
       <h1 className="mb-6 text-2xl font-bold">Log in to EduFlow</h1>
 
       <form onSubmit={handleSubmit} className="space-y-4 rounded-xl bg-white p-6 shadow">

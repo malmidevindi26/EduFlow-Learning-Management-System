@@ -22,8 +22,10 @@ export default async function CoursesPage({
 }){
     const sp = await searchParams
 
-     const search = sp.search?.trim() ?? '';
-     const categoryId = sp.categoryId ?? '';
+    //  const search = sp.search?.trim() ?? '';
+    //  const categoryId = sp.categoryId ?? '';
+     const search = (sp.search ?? '').replace(/[<>]/g, '').trim().slice(0, 100)
+     const categoryId = /^[0-9a-f-]{36}$/i.test(sp.categoryId ?? '') ? sp.categoryId! : ''
      const level = LEVEL_VALUES.includes(sp.level ?? '') ? sp.level! : '';
      const sort = SORT_VALUES.includes(sp.sort ?? '') ? sp.sort! : 'newest';
      const page = Math.max(1, Number(sp.page) || 1);

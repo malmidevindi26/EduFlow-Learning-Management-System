@@ -12,7 +12,7 @@ import { ReviewsService } from './reviews.service';
 
 
 @ApiTags('reviews')
-@Controller('reviews')
+@Controller()
 export class ReviewsController {
     constructor (private readonly reviews: ReviewsService){}
 

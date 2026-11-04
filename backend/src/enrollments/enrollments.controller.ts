@@ -10,7 +10,7 @@ import { EnrollmentsService } from './enrollments.service';
 
 @ApiTags('enrollments')
 @ApiBearerAuth()
-@Controller('enrollments')
+@Controller()
 @UseGuards(JwtAuthGuard, RolesGuard)
 
 export class EnrollmentsController {
@@ -57,6 +57,15 @@ export class EnrollmentsController {
     ){
         return this.enrollments.completeLesson(lessonId, user)
     }
+
+      @Roles(Role.STUDENT)
+      @Get('courses/:courseId/progress')
+      getCourseProgress(
+        @Param('courseId', ParseUUIDPipe) courseId: string,
+        @CurrentUser() user: JwtUser,
+      ) {
+          return this.enrollments.getCourseProgress(courseId, user);
+        }
 
     @Roles(Role.INSTRUCTOR, Role.ADMIN)
     @Get('courses/:courseId/students')

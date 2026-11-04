@@ -4,6 +4,7 @@ import { Search } from "lucide-react"
 import { useRouter } from "next/navigation"
 import { useState, type FormEvent } from "react"
 import { LEVELS, type Category } from "@/lib/types"
+import { stripMarkupChars } from '@/lib/sanitize';
 
 interface Values{
     search: string
@@ -24,7 +25,9 @@ export default function CourseFilters({
 
     function apply(next: Values){
         const param = new URLSearchParams()
-        if(next.search.trim()) param.set('search', next.search.trim())
+        // if(next.search.trim()) param.set('search', next.search.trim())
+        const search = stripMarkupChars(next.search).trim().slice(0, 100)
+        if (search) param.set('search', search)
         if(next.categoryId) param.set('categoryId', next.categoryId)
         if(next.level) param.set('level', next.level)
         if(next.sort && next.sort !== 'newest') param.set('sort', next.sort)
@@ -54,6 +57,7 @@ export default function CourseFilters({
             value={values.search}
             onChange={(e) => setValues({ ...values, search: e.target.value })}
             placeholder="Search courses..."
+            maxLength={100}
             className={`${fieldClass} w-full pl-9`}
           />
         </div>

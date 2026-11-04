@@ -9,6 +9,7 @@ import { useLearnCourse } from '@/hooks/useLearnCourse';
 import { api, getErrorMessage } from '@/lib/api';
 import { fileHref } from '@/lib/files';
 import type { CourseProgress, LessonContent } from '@/lib/types';
+import { safeHref } from '@/lib/sanitize';
 
 export default function LearnPage(){
     const { courseId } = useParams<{ courseId: string }>()
@@ -165,9 +166,9 @@ export default function LearnPage(){
 
                 {(lesson.videoUrl || lesson.fileUrl) && (
                   <div className="mt-6 flex flex-wrap gap-3">
-                    {lesson.videoUrl && (
+                    {safeHref(lesson.videoUrl) && (
                       <a
-                        href={lesson.videoUrl}
+                        href={safeHref(lesson.videoUrl)}
                         target="_blank"
                         rel="noreferrer"
                         className="flex items-center gap-2 rounded-lg border border-slate-300 px-4 py-2 text-sm font-medium hover:bg-slate-50"

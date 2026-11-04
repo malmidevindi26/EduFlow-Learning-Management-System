@@ -43,6 +43,7 @@ export default function RegisterPage(){
           Full name
           <input
             required
+            maxLength={80}
             value={name}
             onChange={(e) => setName(e.target.value)}
             className="mt-1 w-full rounded-lg border border-gray-300 px-3 py-2"
@@ -54,6 +55,7 @@ export default function RegisterPage(){
           <input
             type="email"
             required
+            maxLength={120}
             value={email}
             onChange={(e) => setEmail(e.target.value)}
             className="mt-1 w-full rounded-lg border border-gray-300 px-3 py-2"
@@ -66,6 +68,7 @@ export default function RegisterPage(){
             type="password"
             required
             minLength={8}
+            maxLength={72}
             value={password}
             onChange={(e) => setPassword(e.target.value)}
             className="mt-1 w-full rounded-lg border border-gray-300 px-3 py-2"

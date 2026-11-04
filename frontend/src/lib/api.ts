@@ -1,5 +1,6 @@
 import axios from "axios";
 import { config } from "process";
+import { InputValidationError, validatePayload } from "./sanitize";
 
 export const TOKEN_KEY = 'eduflow_token'
 
@@ -9,6 +10,10 @@ export const api = axios.create({
 
 // automatically attach jwt to every req
 api.interceptors.request.use((config) => {
+
+  const isForm = typeof FormData !== 'undefined' && config.data instanceof FormData
+  if(config.data && !isForm) validatePayload(config.data)
+
   if (typeof window !== 'undefined') {
     const token = localStorage.getItem(TOKEN_KEY);
     if (token) config.headers.Authorization = `Bearer ${token}`;
@@ -17,6 +22,8 @@ api.interceptors.request.use((config) => {
 });
 
 export function getErrorMessage(error: unknown): string{
+    if(error instanceof InputValidationError) return error.message
+
     if(axios.isAxiosError<{ message?: string | string[] }>(error)){
         if(!error.response) return 'Connot reach the server'
         const message = error.response.data?.message

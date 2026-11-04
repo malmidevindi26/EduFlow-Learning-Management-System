@@ -12,6 +12,7 @@ import { StatsService } from './stats.service';
 @ApiTags('stats')
 @ApiBearerAuth()
 @Controller()
+@UseGuards(JwtAuthGuard, RolesGuard)
 export class StatsController {
     constructor(private readonly stats: StatsService){}
 

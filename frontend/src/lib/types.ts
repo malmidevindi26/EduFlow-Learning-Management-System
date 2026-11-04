@@ -137,3 +137,46 @@ export interface MySubmission extends Submission{
         course: { id: string; title: string }
     }
 }
+
+export type CourseStatus = 'DRAFT' | 'PENDING' | 'PUBLISHED' | 'ARCHIVED'
+
+export interface MyCourse extends Course{
+    _count: { lessons: number }
+}
+
+export interface ManagedCourse extends CourseDetails{
+    categoryId: string
+    instructorId: string
+}
+
+export interface LessonFull{
+    id: string
+    title: string
+    content: string
+    videoUrl: string | null
+    fileUrl: string | null
+    position: number
+    courseId: string
+}
+
+export interface CourseStudent{
+    enrollmentId: string
+    student: { id: string; name: string; email: string }
+    status: EnrollmentStatus
+    enrolledAt: string
+    completedLessons: number
+    totalLessons: number
+    progress: number
+}
+
+export interface SubmissionWithStudent extends Submission{
+    student: { id: string; name: string; email: string }
+}
+
+export interface InstructorStats {
+    totalCourses: number
+    totalStudents: number
+    pendingGrading: number
+    averageRating: number | null
+    totalReviews: number
+}

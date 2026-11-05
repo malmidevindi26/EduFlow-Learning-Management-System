@@ -13,6 +13,30 @@ enum Role {
   STUDENT
 }
 
+enum CourseLevel{
+  BEGINNER
+  INTERMEDIATE
+  ADVANCED
+}
+
+enum CourseStatus{
+  DRAFT
+  PENDING
+  PUBLISHED
+  ARCHIVED
+}
+
+enum EnrollmentStatus {
+  ACTIVE
+  COMPLETED
+  DROPPED
+}
+
+enum SubmissionStatus{
+  SUBMITTED
+  GRADED
+}
+
 model User {
   id           String   @id @default(uuid())
   email        String   @unique
@@ -20,6 +44,132 @@ model User {
   name         String
   role         Role     @default(STUDENT)
   isActive     Boolean  @default(true)
+  courses      Course[] @relation("InstructorCourses")
+  enrollments  Enrollment[]
+  submissions Submission[]
+  reviews Review[]
   createdAt    DateTime @default(now())
   updatedAt    DateTime @updatedAt
+}
+
+model Category{
+  id          String   @id @default(uuid())
+  name        String   @unique
+  description String?
+  courses     Course[]
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+}
+
+model Course{
+  id           String   @id @default(uuid())
+  title        String
+  description  String
+  level        CourseLevel @default(BEGINNER)
+  thumbnailUrl String?
+  status       CourseStatus @default(DRAFT)
+  instructorId String
+  instructor   User      @relation("InstructorCourses", fields: [instructorId], references: [id])
+  categoryId   String
+  category     Category  @relation(fields: [categoryId], references: [id])
+  lessons      Lesson[]
+  enrollments  Enrollment[]
+  assignments Assignment[]
+  reviews Review[]
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+
+  @@index([status])
+  @@index([instructorId])
+  @@index([categoryId])
+}
+
+model Lesson{
+  id        String   @id @default(uuid())
+  title     String
+  content   String
+  videoUrl  String?
+  fileUrl   String?
+  position  Int
+  courseId  String
+  course    Course @relation(fields: [courseId], references: [id], onDelete: Cascade)
+  progress  LessonProgress[]
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([courseId, position])
+}
+
+model Enrollment{
+  id      String      @id @default(uuid())
+  userId  String
+  user    User        @relation(fields: [userId], references: [id], onDelete: Cascade)
+  courseId String
+  course   Course     @relation(fields: [courseId], references: [id], onDelete: Cascade)
+  status   EnrollmentStatus    @default(ACTIVE)
+  enrolledAt DateTime          @default(now())
+  progress   LessonProgress[]
+
+  @@unique([userId, courseId])
+  @@index([courseId])
+}
+
+model LessonProgress{
+  id              String     @id @default(uuid())
+  enrollmentId    String
+  enrollment      Enrollment @relation(fields: [enrollmentId], references: [id], onDelete: Cascade)
+  lessonId        String
+  lesson          Lesson     @relation(fields: [lessonId], references: [id], onDelete: Cascade)
+  completedAt     DateTime   @default(now())
+
+  @@unique([enrollmentId, lessonId])
+} 
+
+model Assignment {
+  id          String       @id @default(uuid())
+  title       String
+  description String
+  dueDate     DateTime
+  maxMarks    Int
+  courseId    String
+  course      Course       @relation(fields: [courseId], references: [id], onDelete: Cascade)
+  submissions Submission[]
+  createdAt   DateTime     @default(now())
+  updatedAt   DateTime     @updatedAt
+
+  @@index([courseId])
+}
+
+model Submission {
+  id           String           @id @default(uuid())
+  assignmentId String
+  assignment   Assignment       @relation(fields: [assignmentId], references: [id], onDelete: Cascade)
+  studentId    String
+  student      User             @relation(fields: [studentId], references: [id], onDelete: Cascade)
+  answerText   String?
+  fileUrl      String?
+  submittedAt  DateTime         @default(now())
+  isLate       Boolean          @default(false)
+  marks        Int?
+  feedback     String?
+  status       SubmissionStatus @default(SUBMITTED)
+  gradedAt     DateTime?
+
+  @@unique([assignmentId, studentId])
+  @@index([studentId])
+}
+
+model Review {
+  id        String   @id @default(uuid())
+  courseId  String
+  course    Course   @relation(fields: [courseId], references: [id], onDelete: Cascade)
+  userId    String
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  rating    Int
+  comment   String?
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@unique([courseId, userId])
+  @@index([courseId])
 }

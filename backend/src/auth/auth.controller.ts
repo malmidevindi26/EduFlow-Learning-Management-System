@@ -8,7 +8,9 @@ import { RegisterDto } from './dto/register.dto';
 import { JwtAuthGuard } from './guards/jwt-auth.guard';
 import { RolesGuard } from './guards/roles.guard';
 import type { JwtUser } from './types/jwt-user';
+import { ApiBearerAuth, ApiTags } from '@nestjs/swagger';
 
+@ApiTags('auth')
 @Controller('auth')
 export class AuthController {
   constructor(private readonly authService: AuthService) {}
@@ -24,17 +26,11 @@ export class AuthController {
     return this.authService.login(dto);
   }
 
+  @ApiBearerAuth()
   @UseGuards(JwtAuthGuard)
   @Get('me')
   me(@CurrentUser() user: JwtUser) {
     return user;
   }
 
-  // Temporary route
-  @UseGuards(JwtAuthGuard, RolesGuard)
-  @Roles(Role.ADMIN)
-  @Get('admin-check')
-  adminCheck() {
-    return { message: 'You are an admin' };
-  }
 }

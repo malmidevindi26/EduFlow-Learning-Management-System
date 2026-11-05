@@ -10,6 +10,7 @@ import { api, getErrorMessage } from '@/lib/api';
 import { fileHref } from '@/lib/files';
 import type { CourseProgress, LessonContent } from '@/lib/types';
 import { safeHref } from '@/lib/sanitize';
+import DownloadButton from '@/components/DownloadButton';
 
 export default function LearnPage(){
     const { courseId } = useParams<{ courseId: string }>()
@@ -177,14 +178,11 @@ export default function LearnPage(){
                       </a>
                     )}
                     {lesson.fileUrl && (
-                      <a
-                        href={fileHref(lesson.fileUrl)}
-                        target="_blank"
-                        rel="noreferrer"
+                      <DownloadButton
+                        path={lesson.fileUrl}
+                        label="Download material"
                         className="flex items-center gap-2 rounded-lg border border-slate-300 px-4 py-2 text-sm font-medium hover:bg-slate-50"
-                      >
-                        <FileText size={16} /> Download material
-                      </a>
+                      />
                     )}
                   </div>
                 )}

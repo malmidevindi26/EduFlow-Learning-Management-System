@@ -44,8 +44,8 @@ export class StatsService {
             totalEnrollments,
             totalSubmissions,
             totalReviews,
-            userByRole: Object.fromEntries(roleCounts),
-            coursesByStatus: Object.fromEntries(statusCounts)
+            usersByRole: Object.fromEntries(roleCounts),
+            coursesByStatus: Object.fromEntries(statusCounts),
         }
     }
 

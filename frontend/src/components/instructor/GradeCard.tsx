@@ -7,6 +7,7 @@ import { formatDateTime } from '@/lib/date';
 import { fileHref } from '@/lib/files';
 import type { SubmissionWithStudent } from '@/lib/types';
 import { inputClass, labelClass, primaryBtn } from '@/lib/ui';
+import DownloadButton from '@/components/DownloadButton';
 
 export default function GradeCard({
     submission,
@@ -75,14 +76,11 @@ export default function GradeCard({
           <p className="text-slate-400">No written answer</p>
         )}
         {submission.fileUrl && (
-          <a
-            href={fileHref(submission.fileUrl)}
-            target="_blank"
-            rel="noreferrer"
+          <DownloadButton
+            path={submission.fileUrl}
+            label="Download attached file"
             className="mt-2 inline-flex items-center gap-1 text-blue-600 hover:underline"
-          >
-            <FileText size={14} /> Attached file
-          </a>
+          />
         )}
       </div>
 

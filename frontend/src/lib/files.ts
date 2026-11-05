@@ -37,3 +37,18 @@ export async function uploadFile(file: File){
     )
     return res.data
 }
+
+export async function downloadFile(path: string) {
+  const res = await fetch(fileHref(path));
+  if (!res.ok) throw new Error('Download failed');
+
+  const blob = await res.blob();
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url;
+  a.download = path.split('/').pop() ?? 'file';
+  document.body.appendChild(a);
+  a.click();
+  a.remove();
+  URL.revokeObjectURL(url);
+}

@@ -5,6 +5,7 @@ import { useState, type FormEvent } from 'react';
 import { api, getErrorMessage } from '@/lib/api';
 import { fileHref, uploadFile } from '@/lib/files';
 import type { Assignment, Submission } from '@/lib/types';
+import DownloadButton from '@/components/DownloadButton';
 
 const MAX_SIZE = 10 * 1024 * 1024;
 
@@ -116,14 +117,11 @@ export default function AssignmentCard({
           </p>
           {submission.answerText && <p className="whitespace-pre-line">{submission.answerText}</p>}
           {submission.fileUrl && (
-            <a
-              href={fileHref(submission.fileUrl)}
-              target="_blank"
-              rel="noreferrer"
-              className="mt-2 inline-flex items-center gap-1 text-blue-600 hover:underline"
-            >
-              <FileText size={14} /> Attached file
-            </a>
+            <DownloadButton
+            path={submission.fileUrl}
+            label="Attached file"
+            className="mt-2 inline-flex items-center gap-1 text-blue-600 hover:underline"
+            />
           )}
           {!graded && (
             <button

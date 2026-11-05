@@ -1,4 +1,11 @@
-import { Controller, BadRequestException, Post, UploadedFile, UseGuards, UseInterceptors } from '@nestjs/common';
+import {
+  Controller,
+  BadRequestException,
+  Post,
+  UploadedFile,
+  UseGuards,
+  UseInterceptors,
+} from '@nestjs/common';
 import { FileInterceptor } from '@nestjs/platform-express';
 import { ApiBearerAuth, ApiBody, ApiConsumes, ApiTags } from '@nestjs/swagger';
 import { randomUUID } from 'crypto';
@@ -7,8 +14,8 @@ import { diskStorage } from 'multer';
 import { extname, join } from 'path';
 import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
 
-const UPLOAD_DIR = join(process.cwd(), 'upload')
-const MAX_SIZE = 10 * 1024 * 1024
+const UPLOAD_DIR = join(process.cwd(), 'uploads');
+const MAX_SIZE = 10 * 1024 * 1024;
 const ALLOWED_EXT = new Set([
   '.pdf',
   '.png',
@@ -23,17 +30,15 @@ const ALLOWED_EXT = new Set([
   '.xlsx',
   '.ppt',
   '.pptx',
-])
+]);
 
-if (!existsSync(UPLOAD_DIR)) mkdirSync(UPLOAD_DIR, { recursive: true })
-
+if (!existsSync(UPLOAD_DIR)) mkdirSync(UPLOAD_DIR, { recursive: true });
 
 @ApiTags('uploads')
 @ApiBearerAuth()
 @UseGuards(JwtAuthGuard)
 @Controller('uploads')
 export class UploadsController {
-
   @Post()
   @ApiConsumes('multipart/form-data')
   @ApiBody({
@@ -49,7 +54,10 @@ export class UploadsController {
       storage: diskStorage({
         destination: UPLOAD_DIR,
         filename: (_req, file, cb) => {
-          cb(null, `${randomUUID()}${extname(file.originalname).toLowerCase()}`);
+          cb(
+            null,
+            `${randomUUID()}${extname(file.originalname).toLowerCase()}`,
+          );
         },
       }),
       fileFilter: (_req, file, cb) => {
@@ -74,5 +82,4 @@ export class UploadsController {
       size: file.size,
     };
   }
-
 }

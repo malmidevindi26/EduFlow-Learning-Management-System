@@ -3,6 +3,7 @@
 import { useAuth } from "@/context/AuthContext"
 import StudentDashboard from "@/components/dashboard/StudentDashboard";
 import InstructorDashboard from '@/components/dashboard/InstructorDashboard'
+import AdminDashboard from '@/components/dashboard/AdminDashboard';
 
 const SUBTITLE = {
   STUDENT: 'Pick up where you left off.',
@@ -23,11 +24,7 @@ export default function DashboardPage(){
 
       {user.role === 'STUDENT' && <StudentDashboard />}
       {user.role === 'INSTRUCTOR' && <InstructorDashboard />}
-      {user.role === 'ADMIN' && (
-        <div className="rounded-2xl border border-dashed border-slate-300 bg-white p-12 text-center text-slate-500">
-          Admin tools are coming in the next step.
-        </div>
-      )}
+      {user.role === 'ADMIN' && <AdminDashboard/>}
     </div>
   );
 }

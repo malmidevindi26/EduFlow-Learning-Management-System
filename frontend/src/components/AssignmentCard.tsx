@@ -6,6 +6,7 @@ import { api, getErrorMessage } from '@/lib/api';
 import { fileHref, uploadFile } from '@/lib/files';
 import type { Assignment, Submission } from '@/lib/types';
 import DownloadButton from '@/components/DownloadButton';
+import { toast } from 'sonner';
 
 const MAX_SIZE = 10 * 1024 * 1024;
 
@@ -52,6 +53,8 @@ export default function AssignmentCard({
             })
             setFile(null)
             setEditing(false)
+            await onSubmitted()
+            toast.success('Assignment submitted')
         } catch (error) {
             setError(getErrorMessage(error))
         }finally{

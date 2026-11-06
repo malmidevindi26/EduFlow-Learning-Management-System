@@ -4,6 +4,7 @@ import { useEffect, useState, type FormEvent } from "react"
 import { api, getErrorMessage } from '@/lib/api'
 import { LEVELS, type Category, type CourseLevel, type ManagedCourse } from "@/lib/types"
 import { inputClass, labelClass, primaryBtn } from "@/lib/ui"
+import { toast } from 'sonner';
 
 export default function CourseForm({
     initial,
@@ -50,6 +51,7 @@ export default function CourseForm({
                 ? await api.patch<{ id: string }>(`/courses/${initial.id}`, body)
                 : await api.post<{ id: string }>('/courses', body)
             setSaved(true)
+            toast.success(initial ? 'Course saved' : 'Course created')
             await onSaved(res.data.id)    
         }catch (err){
             setError(getErrorMessage(err))

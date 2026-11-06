@@ -7,6 +7,7 @@ import { useAuth } from '@/context/AuthContext';
 import { useEnrollment } from '@/hooks/useEnrollment';
 import { api, getErrorMessage } from '@/lib/api';
 import type { ReviewsResponse } from '@/lib/types';
+import { toast } from 'sonner';
 
 export default function ReviewSection({
     courseId,
@@ -51,6 +52,7 @@ export default function ReviewSection({
                  comment: comment.trim() || undefined,
                 });
             }
+            toast.success(mine ? 'Review updated' : 'Thanks for your review')
             router.refresh()
         } catch (error) {
             setError(getErrorMessage(error))
@@ -66,6 +68,7 @@ export default function ReviewSection({
             await api.delete(`/reviews/${mine.id}`)
             setRating(0)
             setComment('')
+            toast.success('Review deleted')
             router.refresh()
         } catch (error) {
             setError(getErrorMessage(error))

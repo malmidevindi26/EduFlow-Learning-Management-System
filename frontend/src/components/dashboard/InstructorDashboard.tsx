@@ -7,6 +7,8 @@ import StatusBadge from '@/components/StatusBadge';
 import { api, getErrorMessage } from '@/lib/api';
 import type { InstructorStats, MyCourse } from '@/lib/types';
 import { primaryBtn } from '@/lib/ui';
+import DashboardSkeleton from '@/components/ui/DashboardSkeleton';
+import StatCard, { STAT_TONES } from '@/components/ui/StatCard';
 
 export default function InstructorDashboard() {
   const [stats, setStats] = useState<InstructorStats | null>(null)
@@ -23,8 +25,7 @@ export default function InstructorDashboard() {
   }, []);
 
   if (error) return <p className="rounded-lg bg-red-50 p-4 text-red-700">{error}</p>
-  if (!stats || !courses) return <p className="text-slate-500">Loading your dashboard...</p>
-
+  if (!stats || !courses) return <DashboardSkeleton />
   const cards = [
     { label: 'My courses', value: stats.totalCourses, icon: BookOpen },
     { label: 'Students', value: stats.totalStudents, icon: Users },
@@ -39,7 +40,7 @@ export default function InstructorDashboard() {
   return (
     <div className="space-y-10">
       <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
-        {cards.map(({ label, value, icon: Icon }) => (
+        {/* {cards.map(({ label, value, icon: Icon }) => (
           <div key={label} className="flex items-center gap-4 rounded-2xl border border-slate-200 bg-white p-5 shadow-sm">
             <span className="flex h-11 w-11 items-center justify-center rounded-xl bg-blue-50 text-blue-600">
               <Icon size={22} />
@@ -49,6 +50,9 @@ export default function InstructorDashboard() {
               <p className="text-xs text-slate-500">{label}</p>
             </div>
           </div>
+        ))} */}
+        {cards.map(({ label, value, icon }, i) => (
+          <StatCard key={label} label={label} value={value} icon={icon} tone={STAT_TONES[i % STAT_TONES.length]} />
         ))}
       </div>
 

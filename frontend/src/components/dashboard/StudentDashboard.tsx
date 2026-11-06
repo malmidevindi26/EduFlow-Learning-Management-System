@@ -75,8 +75,12 @@ export default function StudentDashboard(){
             {enrollments.map((e) => (
               <div key={e.id} className="flex flex-col rounded-2xl border border-slate-200 bg-white p-5 shadow-sm">
                 <p className="text-xs text-slate-500">{e.course.category.name}</p>
-                <Link href={`/courses/${e.course.id}`} className="mt-1 font-semibold hover:text-blue-600">
-                  {e.course.title}
+                <Link
+                    href={`/courses/${e.course.id}`}
+                    title={e.course.title}
+                    className="mt-1 line-clamp-2 font-semibold hover:text-blue-600"
+                >
+                    {e.course.title}
                 </Link>
                 <p className="text-xs text-slate-500">By {e.course.instructor.name}</p>
 

@@ -59,7 +59,7 @@ export default function CourseManageLayout({ children }: { children: ReactNode }
         <ChevronLeft size={16} /> Dashboard
       </Link>
       <div className="mt-2 flex flex-wrap items-center gap-3">
-        <h1 className="text-2xl font-bold">{course.title}</h1>
+        <h1 title={course.title} className="line-clamp-2 text-2xl font-bold">{course.title}</h1>
         <StatusBadge status={course.status} />
       </div>
 

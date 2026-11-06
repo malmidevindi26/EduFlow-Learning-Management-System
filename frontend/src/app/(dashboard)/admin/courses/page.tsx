@@ -62,7 +62,7 @@ function CourseRow({
       <div className="flex flex-wrap items-start justify-between gap-3">
         <div>
           <div className="flex items-center gap-2">
-            <h3 className="font-semibold">{course.title}</h3>
+            <h3 title={course.title} className="line-clamp-1 max-w-md font-semibold">{course.title}</h3>
             <StatusBadge status={course.status} />
           </div>
           <p className="mt-1 text-xs text-slate-500">

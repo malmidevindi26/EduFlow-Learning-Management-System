@@ -8,6 +8,7 @@ import { useEnrollment } from '@/hooks/useEnrollment';
 import { api, getErrorMessage } from '@/lib/api';
 import type { ReviewsResponse } from '@/lib/types';
 import { toast } from 'sonner';
+import CharCount from '@/components/ui/CharCount';
 
 export default function ReviewSection({
     courseId,
@@ -97,7 +98,8 @@ export default function ReviewSection({
               </button>
             ))}
           </div>
-          <textarea
+          <div>
+            <textarea
             value={comment}
             onChange={(e) => setComment(e.target.value)}
             rows={3}
@@ -105,6 +107,8 @@ export default function ReviewSection({
             placeholder="Share your experience (optional)"
             className="w-full rounded-lg border border-slate-300 bg-white px-3 py-2 text-sm outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-100"
           />
+          <CharCount value={comment} max={1000} />
+          </div>
           {error && <p className="mt-2 text-sm text-red-600">{error}</p>}
           <div className="mt-3 flex items-center gap-3">
             <button

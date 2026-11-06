@@ -5,6 +5,7 @@ import { api, getErrorMessage } from '@/lib/api';
 import { toLocalInput } from '@/lib/date';
 import type { Assignment } from '@/lib/types';
 import { inputClass, labelClass, primaryBtn, secondaryBtn } from '@/lib/ui';
+import CharCount from '@/components/ui/CharCount';
 
 export default function AssignmentForm({
     courseId,
@@ -57,11 +58,13 @@ export default function AssignmentForm({
       <label className={labelClass}>
         Title
         <input required maxLength={120} value={title} onChange={(e) => setTitle(e.target.value)} className={`${inputClass} mt-1`} />
+        <CharCount value={title} max={120} />
       </label>
 
       <label className={labelClass}>
         Description
         <textarea required rows={4} maxLength={5000} value={description} onChange={(e) => setDescription(e.target.value)} className={`${inputClass} mt-1`} />
+        <CharCount value={description} max={5000} /> 
       </label>
 
       <div className="grid gap-4 sm:grid-cols-2">

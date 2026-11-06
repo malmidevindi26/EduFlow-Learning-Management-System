@@ -7,6 +7,7 @@ import { useManagedCourse } from '@/context/InstructorCourseContext';
 import { api, getErrorMessage } from '@/lib/api';
 import type { LessonFull } from '@/lib/types';
 import { primaryBtn } from '@/lib/ui';
+import Tooltip from '@/components/ui/Tooltip';
 
 export default function LessonsTab(){
     const { course, reload } = useManagedCourse();
@@ -100,19 +101,29 @@ export default function LessonsTab(){
               <span className="flex h-7 w-7 shrink-0 items-center justify-center rounded-full bg-blue-50 text-xs font-semibold text-blue-700">
                 {l.position}
               </span>
-              <span className="flex-1 text-sm font-medium">{l.title}</span>
-              <button className={iconBtn} disabled={busy || i === 0} onClick={() => move(i, -1)} aria-label="Move up">
-                <ArrowUp size={16} />
-              </button>
-              <button className={iconBtn} disabled={busy || i === lessons.length - 1} onClick={() => move(i, 1)} aria-label="Move down">
-                <ArrowDown size={16} />
-              </button>
-              <button className={iconBtn} disabled={busy} onClick={() => edit(l.id)} aria-label="Edit">
-                <Pencil size={16} />
-              </button>
-              <button className={`${iconBtn} hover:text-red-600`} disabled={busy} onClick={() => remove(l.id, l.title)} aria-label="Delete">
-                <Trash2 size={16} />
-              </button>
+              <span title={l.title} className="min-w-0 flex-1 truncate text-sm font-medium">
+                {l.title}
+              </span>
+              <Tooltip text="Move up">
+                <button className={iconBtn} disabled={busy || i === 0} onClick={() => move(i, -1)} aria-label="Move up">
+                  <ArrowUp size={16} />
+                </button>
+              </Tooltip>
+              <Tooltip text="Move down">
+                 <button className={iconBtn} disabled={busy || i === lessons.length - 1} onClick={() => move(i, 1)} aria-label="Move down">
+                   <ArrowDown size={16} />
+                 </button>
+              </Tooltip>
+              <Tooltip text="Edit lesson">
+                 <button className={iconBtn} disabled={busy} onClick={() => edit(l.id)} aria-label="Edit lesson">
+                    <Pencil size={16} />
+                 </button>
+              </Tooltip>
+              <Tooltip text="Delete lesson">
+                 <button className={`${iconBtn} hover:text-red-600`} disabled={busy} onClick={() => remove(l.id, l.title)} aria-label="Delete lesson">
+                    <Trash2 size={16} />
+                 </button>
+              </Tooltip>
             </li>
           ))}
         </ol>

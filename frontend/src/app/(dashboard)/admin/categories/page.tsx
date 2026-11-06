@@ -5,6 +5,8 @@ import { useCallback, useEffect, useState, type FormEvent } from 'react';
 import { api, getErrorMessage } from '@/lib/api';
 import type { Category } from '@/lib/types';
 import { inputClass, labelClass, primaryBtn } from '@/lib/ui';
+import CharCount from '@/components/ui/CharCount';
+import Tooltip from '@/components/ui/Tooltip'
 
 export default function AdminCategoriesPage(){
     const [categories, setCategories] = useState<Category[] | null>(null);
@@ -87,10 +89,12 @@ export default function AdminCategoriesPage(){
           <label className={labelClass}>
             Name
             <input required maxLength={60} value={name} onChange={(e) => setName(e.target.value)} className={`${inputClass} mt-1`} />
+            <CharCount value={name} max={60} />
           </label>
           <label className={labelClass}>
             Description (optional)
             <input maxLength={300} value={description} onChange={(e) => setDescription(e.target.value)} className={`${inputClass} mt-1`} />
+            <CharCount value={description} max={300} />
           </label>
           <button type="submit" disabled={busy} className={`${primaryBtn} flex items-center justify-center gap-1`}>
             <Plus size={16} /> Add
@@ -129,16 +133,22 @@ export default function AdminCategoriesPage(){
                 </>
               ) : (
                 <>
-                  <div className="flex-1">
-                    <p className="font-medium">{c.name}</p>
-                    {c.description && <p className="text-sm text-slate-500">{c.description}</p>}
+                  <div className="min-w-0 flex-1">
+                    <p title={c.name} className="truncate font-medium">{c.name}</p>
+                    {c.description && (
+                      <p title={c.description} className="line-clamp-2 text-sm text-slate-500">{c.description}</p>
+                    )}
                   </div>
-                  <button onClick={() => startEdit(c)} className="rounded-lg p-2 text-slate-500 hover:bg-slate-100" aria-label="Edit">
-                    <Pencil size={16} />
-                  </button>
-                  <button onClick={() => remove(c)} disabled={busy} className="rounded-lg p-2 text-slate-500 hover:bg-slate-100 hover:text-red-600" aria-label="Delete">
-                    <Trash2 size={16} />
-                  </button>
+                  <Tooltip text="Rename">
+                    <button onClick={() => startEdit(c)} className="rounded-lg p-2 text-slate-500 hover:bg-slate-100" aria-label="Rename category">
+                      <Pencil size={16} />
+                    </button>
+                  </Tooltip>
+                  <Tooltip text="Delete">
+                    <button onClick={() => remove(c)} disabled={busy} className="rounded-lg p-2 text-slate-500 hover:bg-slate-100 hover:text-red-600" aria-label="Delete category">
+                      <Trash2 size={16} />
+                    </button>
+                  </Tooltip>
                 </>
               )}
             </li>

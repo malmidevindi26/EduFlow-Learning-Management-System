@@ -1,5 +1,6 @@
 'use client';
-
+import DashboardSkeleton from '@/components/ui/DashboardSkeleton';
+import StatCard, { STAT_TONES } from '@/components/ui/StatCard';
 import { BookOpen, ClipboardList, GraduationCap, Star, Users } from 'lucide-react';
 import Link from 'next/link';
 import { useEffect, useState } from 'react';
@@ -42,8 +43,7 @@ export default function AdminDashboard() {
   }, []);
 
   if (error) return <p className="rounded-lg bg-red-50 p-4 text-red-700">{error}</p>;
-  if (!stats) return <p className="text-slate-500">Loading statistics...</p>;
-
+  if (!stats) return <DashboardSkeleton />
   const cards = [
     { label: 'Users', value: stats.totalUsers, icon: Users },
     { label: 'Courses', value: stats.totalCourses, icon: BookOpen },
@@ -62,16 +62,8 @@ export default function AdminDashboard() {
   return (
     <div className="space-y-10">
       <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-5">
-        {cards.map(({ label, value, icon: Icon }) => (
-          <div key={label} className="flex items-center gap-4 rounded-2xl border border-slate-200 bg-white p-5 shadow-sm">
-            <span className="flex h-11 w-11 items-center justify-center rounded-xl bg-blue-50 text-blue-600">
-              <Icon size={22} />
-            </span>
-            <div>
-              <p className="text-2xl font-bold">{value}</p>
-              <p className="text-xs text-slate-500">{label}</p>
-            </div>
-          </div>
+        {cards.map(({ label, value, icon }, i) => (
+          <StatCard key={label} label={label} value={value} icon={icon} tone={STAT_TONES[i % STAT_TONES.length]} />
         ))}
       </div>
 

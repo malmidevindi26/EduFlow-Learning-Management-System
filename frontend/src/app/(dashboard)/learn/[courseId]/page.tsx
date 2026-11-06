@@ -11,6 +11,7 @@ import { fileHref } from '@/lib/files';
 import type { CourseProgress, LessonContent } from '@/lib/types';
 import { safeHref } from '@/lib/sanitize';
 import DownloadButton from '@/components/DownloadButton';
+import { toast } from 'sonner';
 
 export default function LearnPage(){
     const { courseId } = useParams<{ courseId: string }>()
@@ -77,7 +78,9 @@ export default function LearnPage(){
                 status: res.data.status,
               }
              : prev,
-        )
+            )
+            toast.success('You have been unenrolled');
+
         }catch(err){
             setLessonError(getErrorMessage(err))
         }finally{

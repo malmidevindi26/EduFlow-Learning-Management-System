@@ -1,27 +1,58 @@
 'use client'
 
+import { GraduationCap, Presentation } from 'lucide-react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
-import { useState, type FormEvent } from 'react';
+import { useEffect, useState, type FormEvent } from 'react';
+import { toast } from 'sonner';
+import PasswordInput from '@/components/ui/PasswordInput';
+import Spinner from '@/components/ui/Spinner';
 import { useAuth } from '@/context/AuthContext';
 import { getErrorMessage } from '@/lib/api';
+import { inputClass, labelClass, primaryBtn } from '@/lib/ui';
+
+type SignupRole = 'STUDENT' | 'INSTRUCTOR'
+
+const ROLES = [
+  { value: 'STUDENT', title: 'Student', text: 'Learn from courses', icon: GraduationCap },
+  { value: 'INSTRUCTOR', title: 'Instructor', text: 'Teach and grade', icon: Presentation },
+] as const
+
+const STRENGTH_LABEL = ['Too short', 'Weak', 'Fair', 'Good', 'Strong'];
+const STRENGTH_COLOR = ['bg-slate-200', 'bg-rose-500', 'bg-amber-500', 'bg-lime-500', 'bg-emerald-500'];
+
+function strength(p: string){
+  let score = 0;
+  if (p.length >= 8) score++;
+  if (/[A-Z]/.test(p) && /[a-z]/.test(p)) score++;
+  if (/\d/.test(p)) score++;
+  if (/[^A-Za-z0-9]/.test(p)) score++;
+  return score;
+}
 
 export default function RegisterPage(){
-    const { register } = useAuth()
+    const { register, user, loading } = useAuth()
     const router = useRouter()
     const [name, setName] = useState('')
     const [email, setEmail] = useState('')
     const [password, setPassword] = useState('')
-    const [role, setRole] = useState<'STUDENT' | 'INSTRUCTOR'>('STUDENT')
+    const [role, setRole] = useState<SignupRole>('STUDENT')
     const [error, setError] = useState('')
     const [submitting, setSubmitting] = useState(false)
+
+    useEffect(() => {
+      if (!loading && user) router.replace('/dashboard')
+    }, [loading, user, router])
+
+    const score = password ? strength(password) : 0
 
     async function handleSubmit(e: FormEvent) {
         e.preventDefault()
         setError('')
         setSubmitting(true)
         try {
-            await register({ name, email, password, role })
+            const created = await register({ name: name.trim(), email, password, role })
+            toast.success(`Account created. Welcome, ${created.name}`)
             router.push('/dashboard')
         } catch (error) {
             setError(getErrorMessage(error))
@@ -31,77 +62,101 @@ export default function RegisterPage(){
     }
 
     return (
-    <main className="mx-auto flex min-h-[70vh] py-10 max-w-md flex-col justify-center px-6">
-      <h1 className="mb-6 text-2xl font-bold">Create your account</h1>
+    <div>
+      <h1 className="text-3xl font-bold tracking-tight">Create your account</h1>
+      <p className="mt-2 text-slate-600">Start learning or teaching in a minute.</p>
 
-      <form onSubmit={handleSubmit} className="space-y-4 rounded-xl bg-white p-6 shadow">
+      <form onSubmit={handleSubmit} className="mt-8 space-y-5">
         {error && (
-          <p className="rounded-lg bg-red-50 px-3 py-2 text-sm text-red-700">{error}</p>
+          <p role="alert" className="rounded-xl bg-red-50 px-4 py-3 text-sm text-red-700">
+            {error}
+          </p>
         )}
 
-        <label className="block text-sm font-medium">
-          Full name
+        <div>
+          <p className={labelClass}>I want to</p>
+          <div className="mt-1.5 grid grid-cols-2 gap-3">
+            {ROLES.map(({ value, title, text, icon: Icon }) => (
+              <button
+                key={value}
+                type="button"
+                aria-pressed={role === value}
+                onClick={() => setRole(value)}
+                className={`rounded-xl border p-4 text-left transition ${
+                  role === value
+                    ? 'border-blue-500 bg-blue-50 ring-4 ring-blue-100'
+                    : 'border-slate-300 bg-white hover:border-slate-400'
+                }`}
+              >
+                <Icon size={22} className={role === value ? 'text-blue-600' : 'text-slate-400'} />
+                <p className="mt-2 text-sm font-semibold">{title}</p>
+                <p className="text-xs text-slate-500">{text}</p>
+              </button>
+            ))}
+          </div>
+        </div>
+
+        <div>
+          <label htmlFor="name" className={labelClass}>
+            Full name
+          </label>
           <input
+            id="name"
             required
             maxLength={80}
+            autoComplete="name"
             value={name}
             onChange={(e) => setName(e.target.value)}
-            className="mt-1 w-full rounded-lg border border-gray-300 px-3 py-2"
+            className={`${inputClass} mt-1.5`}
           />
-        </label>
+        </div>
 
-        <label className="block text-sm font-medium">
-          Email
+        <div>
+          <label htmlFor="email" className={labelClass}>
+            Email
+          </label>
           <input
+            id="email"
             type="email"
             required
             maxLength={120}
+            autoComplete="email"
             value={email}
             onChange={(e) => setEmail(e.target.value)}
-            className="mt-1 w-full rounded-lg border border-gray-300 px-3 py-2"
+            className={`${inputClass} mt-1.5`}
           />
-        </label>
+        </div>
 
-        <label className="block text-sm font-medium">
-          Password (min 8 characters)
-          <input
-            type="password"
-            required
-            minLength={8}
-            maxLength={72}
-            value={password}
-            onChange={(e) => setPassword(e.target.value)}
-            className="mt-1 w-full rounded-lg border border-gray-300 px-3 py-2"
-          />
-        </label>
+        <div>
+          <label htmlFor="password" className={labelClass}>
+            Password
+          </label>
+          <div className="mt-1.5">
+            <PasswordInput id="password" value={password} onChange={setPassword} autoComplete="new-password" minLength={8} />
+          </div>
+          {password && (
+            <div className="mt-2">
+              <div className="flex gap-1">
+                {[0, 1, 2, 3].map((i) => (
+                  <span key={i} className={`h-1.5 flex-1 rounded-full ${i < score ? STRENGTH_COLOR[score] : 'bg-slate-200'}`} />
+                ))}
+              </div>
+              <p className="mt-1 text-xs text-slate-500">{STRENGTH_LABEL[score]} (at least 8 characters)</p>
+            </div>
+          )}
+        </div>
 
-        <label className="block text-sm font-medium">
-          I want to
-          <select
-            value={role}
-            onChange={(e) => setRole(e.target.value as 'STUDENT' | 'INSTRUCTOR')}
-            className="mt-1 w-full rounded-lg border border-gray-300 px-3 py-2"
-          >
-            <option value="STUDENT">Learn (Student)</option>
-            <option value="INSTRUCTOR">Teach (Instructor)</option>
-          </select>
-        </label>
-
-        <button
-          type="submit"
-          disabled={submitting}
-          className="w-full rounded-lg bg-blue-600 py-2 text-white hover:bg-blue-700 disabled:opacity-50"
-        >
-          {submitting ? 'Creating account...' : 'Register'}
+        <button type="submit" disabled={submitting} className={`${primaryBtn} w-full py-3`}>
+          {submitting && <Spinner />} {submitting ? 'Creating account...' : 'Create account'}
         </button>
       </form>
 
-      <p className="mt-4 text-center text-sm text-gray-600">
+      <p className="mt-6 text-center text-sm text-slate-600">
         Already have an account?{' '}
-        <Link href="/login" className="text-blue-600 hover:underline">
+        <Link href="/login" className="font-semibold text-blue-600 hover:underline">
           Log in
         </Link>
       </p>
-    </main>
+    </div>
   );
 }

@@ -6,6 +6,7 @@ import { api, getErrorMessage } from '@/lib/api';
 import { fileHref, uploadFile } from '@/lib/files';
 import type { LessonFull } from '@/lib/types';
 import { inputClass, labelClass, primaryBtn, secondaryBtn } from '@/lib/ui';
+import { toast } from 'sonner';
 
 const MAX_SIZE = 10 * 1024 * 1024
 
@@ -59,6 +60,7 @@ export default function LessonForm({
             }
             if (lesson) await api.patch(`/lessons/${lesson.id}`, body)
             else await api.post(`/courses/${courseId}/lessons`, body)
+            toast.success(lesson ? 'Lesson updated' : 'Lesson added')
             await onDone()
         } catch (error) {
             setError(getErrorMessage(error))

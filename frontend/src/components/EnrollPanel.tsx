@@ -7,6 +7,7 @@ import ProgressBar from '@/components/ProgressBar';
 import { useAuth } from '@/context/AuthContext';
 import { useEnrollment } from '@/hooks/useEnrollment';
 import { api, getErrorMessage } from '@/lib/api';
+import { toast } from 'sonner';
 
 export default function EnrollPanel({
     courseId,
@@ -30,6 +31,7 @@ export default function EnrollPanel({
         try {
             await api.post(`/courses/${courseId}/enroll`)
             await refresh()
+            toast.success('You are enrolled. Happy learning!')
         } catch (err) {
             setError(getErrorMessage(err))
         }finally{
@@ -44,6 +46,7 @@ export default function EnrollPanel({
         try {
             await api.delete(`/courses/${courseId}/enroll`)
             await refresh()
+            toast.success('You have been unenrolled');
         } catch (error) {
             setError(getErrorMessage(error))
         }finally{

@@ -8,6 +8,7 @@ import { fileHref } from '@/lib/files';
 import type { SubmissionWithStudent } from '@/lib/types';
 import { inputClass, labelClass, primaryBtn } from '@/lib/ui';
 import DownloadButton from '@/components/DownloadButton';
+import { toast } from 'sonner';
 
 export default function GradeCard({
     submission,
@@ -39,6 +40,7 @@ export default function GradeCard({
                feedback: feedback.trim() || undefined,
             });
             await onGraded();
+            toast.success('Grade saved')
         } catch (error) {
             setError(getErrorMessage(error))
         }finally{

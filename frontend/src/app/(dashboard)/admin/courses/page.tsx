@@ -176,8 +176,8 @@ export default function AdminCoursesPage(){
       ) : list.length === 0 ? (
         <EmptyState
           icon={CheckCircle2}
-          title="All caught up"
-          text="No courses are waiting for approval."
+          title= {tab === 'pending' ? 'All caught up' : 'No published coursed'}
+          text= {tab === 'pending' ? 'No courses are waiting for approval.' : 'Approved courses will appear here'}
         />
       ) : (
         <div className="space-y-4">

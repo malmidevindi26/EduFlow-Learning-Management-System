@@ -5,6 +5,9 @@ import ProgressBar from '@/components/ProgressBar';
 import { useManagedCourse } from '@/context/InstructorCourseContext';
 import { api, getErrorMessage } from '@/lib/api';
 import type { CourseStudent } from '@/lib/types';
+import Avatar from '@/components/ui/Avatar';
+import EmptyState from '@/components/ui/EmptyState';
+import { Users } from 'lucide-react';
 
 export default function StudentsTab(){
     const { course } = useManagedCourse()
@@ -25,9 +28,11 @@ export default function StudentsTab(){
         <div>
           <h2 className="mb-4 text-lg font-semibold">Enrolled students ({students.length})</h2>
             {students.length === 0 ? (
-          <p className="rounded-2xl border border-dashed border-slate-300 bg-white p-10 text-center text-slate-500">
-              No students have enrolled yet.
-          </p>
+              <EmptyState
+                icon={Users}
+                title="No students yet"
+                text="Students appear here after they enroll."
+              />
         ) : (
         <div className="overflow-x-auto rounded-2xl border border-slate-200 bg-white shadow-sm">
           <table className="w-full text-left text-sm">
@@ -41,10 +46,15 @@ export default function StudentsTab(){
             </thead>
             <tbody className="divide-y divide-slate-100">
               {students.map((s) => (
-                <tr key={s.enrollmentId}>
+                <tr key={s.enrollmentId} className="transition hover:bg-slate-50/70">
                   <td className="px-4 py-3">
-                    <p className="font-medium">{s.student.name}</p>
-                    <p className="text-xs text-slate-500">{s.student.email}</p>
+                    <div className="flex items-center gap-3">
+                      <Avatar name={s.student.name} />
+                      <div className="min-w-0">
+                        <p className="truncate font-medium">{s.student.name}</p>
+                        <p className="truncate text-xs text-slate-500">{s.student.email}</p>
+                      </div>
+                    </div>
                   </td>
                   <td className="px-4 py-3 text-slate-600">{new Date(s.enrolledAt).toLocaleDateString()}</td>
                   <td className="w-48 px-4 py-3">

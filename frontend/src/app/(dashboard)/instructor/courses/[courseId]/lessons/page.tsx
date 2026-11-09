@@ -1,18 +1,22 @@
 'use client';
 
-import { ArrowDown, ArrowUp, Pencil, Plus, Trash2 } from 'lucide-react';
+import { ArrowDown, ArrowUp, Pencil, Plus, Trash2, BookOpen } from 'lucide-react';
 import { useState } from 'react';
 import LessonForm from '@/components/instructor/LessonForm';
 import { useManagedCourse } from '@/context/InstructorCourseContext';
 import { api, getErrorMessage } from '@/lib/api';
 import type { LessonFull } from '@/lib/types';
 import { primaryBtn } from '@/lib/ui';
+import Tooltip from '@/components/ui/Tooltip';
+import { useConfirm } from '@/components/ui/ConfirmDialog';
+import EmptyState from '@/components/ui/EmptyState';
 
 export default function LessonsTab(){
     const { course, reload } = useManagedCourse();
     const [editing, setEditing] = useState<LessonFull | 'new' | null>(null);
     const [busy, setBusy] = useState(false);
     const [error, setError] = useState('');
+    const confirm = useConfirm()
 
     const lessons = [...course.lessons].sort((a, b) => a.position - b.position)
 
@@ -27,8 +31,16 @@ export default function LessonsTab(){
     }
 
     async function remove(id: string, title: string){
-        if(!window.confirm(`Delete lesson "${title}"? Students' progress on it is removed too.`)) return
-        setBusy(true)
+       const ok = await confirm({
+        title: `Delete lesson "${title}"?`,
+        message: 'Students progress on it is removed too.',
+        confirmLabel: 'Delete',
+        danger: true
+       })
+
+       if(!ok) return
+
+       setBusy(true)
         setError('')
         try {
             await api.delete(`/lessons/${id}`);
@@ -90,9 +102,11 @@ export default function LessonsTab(){
       )}
 
       {lessons.length === 0 ? (
-        <p className="rounded-2xl border border-dashed border-slate-300 bg-white p-10 text-center text-slate-500">
-          No lessons yet. Add the first one.
-        </p>
+        <EmptyState
+          icon={BookOpen}
+          title="No lessons yet"
+          text="Add the first lesson to get started."
+        />
       ) : (
         <ol className="space-y-2">
           {lessons.map((l, i) => (
@@ -100,19 +114,29 @@ export default function LessonsTab(){
               <span className="flex h-7 w-7 shrink-0 items-center justify-center rounded-full bg-blue-50 text-xs font-semibold text-blue-700">
                 {l.position}
               </span>
-              <span className="flex-1 text-sm font-medium">{l.title}</span>
-              <button className={iconBtn} disabled={busy || i === 0} onClick={() => move(i, -1)} aria-label="Move up">
-                <ArrowUp size={16} />
-              </button>
-              <button className={iconBtn} disabled={busy || i === lessons.length - 1} onClick={() => move(i, 1)} aria-label="Move down">
-                <ArrowDown size={16} />
-              </button>
-              <button className={iconBtn} disabled={busy} onClick={() => edit(l.id)} aria-label="Edit">
-                <Pencil size={16} />
-              </button>
-              <button className={`${iconBtn} hover:text-red-600`} disabled={busy} onClick={() => remove(l.id, l.title)} aria-label="Delete">
-                <Trash2 size={16} />
-              </button>
+              <span title={l.title} className="min-w-0 flex-1 truncate text-sm font-medium">
+                {l.title}
+              </span>
+              <Tooltip text="Move up">
+                <button className={iconBtn} disabled={busy || i === 0} onClick={() => move(i, -1)} aria-label="Move up">
+                  <ArrowUp size={16} />
+                </button>
+              </Tooltip>
+              <Tooltip text="Move down">
+                 <button className={iconBtn} disabled={busy || i === lessons.length - 1} onClick={() => move(i, 1)} aria-label="Move down">
+                   <ArrowDown size={16} />
+                 </button>
+              </Tooltip>
+              <Tooltip text="Edit lesson">
+                 <button className={iconBtn} disabled={busy} onClick={() => edit(l.id)} aria-label="Edit lesson">
+                    <Pencil size={16} />
+                 </button>
+              </Tooltip>
+              <Tooltip text="Delete lesson">
+                 <button className={`${iconBtn} hover:text-red-600`} disabled={busy} onClick={() => remove(l.id, l.title)} aria-label="Delete lesson">
+                    <Trash2 size={16} />
+                 </button>
+              </Tooltip>
             </li>
           ))}
         </ol>

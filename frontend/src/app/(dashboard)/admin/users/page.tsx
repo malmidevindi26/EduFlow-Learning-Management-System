@@ -1,12 +1,15 @@
 'use client';
 
-import { ChevronLeft, ChevronRight, Search } from 'lucide-react';
+import { ChevronLeft, ChevronRight, Search, Users } from 'lucide-react';
 import { useCallback, useEffect, useState, type FormEvent } from 'react';
 import { useAuth } from '@/context/AuthContext';
 import { api, getErrorMessage } from '@/lib/api';
 import { stripMarkupChars } from '@/lib/sanitize';
 import type { AdminUser, Paginated, Role } from '@/lib/types';
 import { inputClass, primaryBtn, secondaryBtn } from '@/lib/ui';
+import { useConfirm } from '@/components/ui/ConfirmDialog';
+import Avatar from '@/components/ui/Avatar';
+import EmptyState from '@/components/ui/EmptyState';
 
 const ROLES: Role[] = ['ADMIN', 'INSTRUCTOR', 'STUDENT']
 
@@ -19,6 +22,7 @@ export default function AdminUsersPage(){
     const [data, setData] = useState<Paginated<AdminUser> | null>(null)
     const [busyId, setBusyId] = useState<string | null>(null)
     const [error, setError] = useState('')
+    const confirm = useConfirm()
 
     const load = useCallback(async () => {
         try {
@@ -44,7 +48,13 @@ export default function AdminUsersPage(){
     }
 
     async function update(target: AdminUser, body: { role?: Role; isActive?: boolean }, message: string){
-        if(!window.confirm(message)) return
+        const ok = await confirm({
+          title: 'Please confirm',
+          message,
+          confirmLabel: 'Confirm'
+        })
+        if(!ok) return
+
         setBusyId(target.id)
         setError('')
         try {
@@ -97,13 +107,15 @@ export default function AdminUsersPage(){
       {!data ? (
         <p className="text-slate-500">Loading users...</p>
       ) : data.items.length === 0 ? (
-        <p className="rounded-2xl border border-dashed border-slate-300 bg-white p-10 text-center text-slate-500">
-          No users found.
-        </p>
+        <EmptyState
+          icon={Users}
+          title="No users found"
+          text="Try a different search."
+        />
       ) : (
         <div className="overflow-x-auto rounded-2xl border border-slate-200 bg-white shadow-sm">
           <table className="w-full text-left text-sm">
-            <thead className="border-b border-slate-200 bg-slate-50 text-xs uppercase text-slate-500">
+            <thead className="sticky top-0 border-b border-slate-200 bg-slate-50 text-xs uppercase text-slate-500">
               <tr>
                 <th className="px-4 py-3">User</th>
                 <th className="px-4 py-3">Role</th>
@@ -117,12 +129,17 @@ export default function AdminUsersPage(){
                 const isMe = u.id === me?.id;
                 const busy = busyId === u.id;
                 return (
-                  <tr key={u.id}>
+                  <tr key={u.id} className="transition hover:bg-slate-50/70">
                     <td className="px-4 py-3">
-                      <p className="font-medium">
-                        {u.name} {isMe && <span className="text-xs text-slate-400">(you)</span>}
-                      </p>
-                      <p className="text-xs text-slate-500">{u.email}</p>
+                      <div className="flex items-center gap-3">
+                        <Avatar name={u.name} />
+                        <div className="min-w-0">
+                          <p className="truncate font-medium">
+                            {u.name} {isMe && <span className="text-xs text-slate-400">(you)</span>}
+                          </p>
+                          <p className="truncate text-xs text-slate-500">{u.email}</p>
+                        </div>
+                      </div>
                     </td>
                     <td className="px-4 py-3">
                       <select

@@ -6,6 +6,8 @@ import { api, getErrorMessage } from '@/lib/api';
 import { fileHref, uploadFile } from '@/lib/files';
 import type { LessonFull } from '@/lib/types';
 import { inputClass, labelClass, primaryBtn, secondaryBtn } from '@/lib/ui';
+import { toast } from 'sonner';
+import CharCount from '@/components/ui/CharCount';
 
 const MAX_SIZE = 10 * 1024 * 1024
 
@@ -59,6 +61,7 @@ export default function LessonForm({
             }
             if (lesson) await api.patch(`/lessons/${lesson.id}`, body)
             else await api.post(`/courses/${courseId}/lessons`, body)
+            toast.success(lesson ? 'Lesson updated' : 'Lesson added')
             await onDone()
         } catch (error) {
             setError(getErrorMessage(error))
@@ -75,16 +78,19 @@ export default function LessonForm({
       <label className={labelClass}>
         Title
         <input required maxLength={120} value={title} onChange={(e) => setTitle(e.target.value)} className={`${inputClass} mt-1`} />
+        <CharCount value={title} max={120} />
       </label>
 
       <label className={labelClass}>
         Content
         <textarea required rows={6} maxLength={20000} value={content} onChange={(e) => setContent(e.target.value)} className={`${inputClass} mt-1`} />
+        <CharCount value={content} max={20000} />
       </label>
 
       <label className={labelClass}>
         Video link (optional, http/https)
         <input type="url" value={videoUrl} onChange={(e) => setVideoUrl(e.target.value)} placeholder="https://..." className={`${inputClass} mt-1`} />
+        <CharCount value={videoUrl} max={500} />
       </label>
 
       <div>

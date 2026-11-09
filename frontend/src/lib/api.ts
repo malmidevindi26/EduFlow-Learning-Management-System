@@ -1,6 +1,7 @@
 import axios from "axios";
 import { config } from "process";
 import { InputValidationError, validatePayload } from "./sanitize";
+import { error } from "console";
 
 export const TOKEN_KEY = 'eduflow_token'
 
@@ -20,6 +21,21 @@ api.interceptors.request.use((config) => {
   }
   return config;
 });
+
+api.interceptors.response.use(
+ (res) => res,
+ (error) => {
+    if(axios.isAxiosError(error) && error.response?.status === 401 && typeof window !== 'undefined'){
+      const url = error.config?.url ?? ''
+      const isAuthCall = url.includes('/auth/')
+      if(isAuthCall && localStorage.getItem(TOKEN_KEY)){
+        localStorage.removeItem(TOKEN_KEY)
+        window.location.href = '/login?expired=1'
+      }
+    }
+    return Promise.reject(error)
+ }
+)
 
 export function getErrorMessage(error: unknown): string{
     if(error instanceof InputValidationError) return error.message

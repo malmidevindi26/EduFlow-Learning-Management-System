@@ -4,6 +4,8 @@ import { useEffect, useState, type FormEvent } from "react"
 import { api, getErrorMessage } from '@/lib/api'
 import { LEVELS, type Category, type CourseLevel, type ManagedCourse } from "@/lib/types"
 import { inputClass, labelClass, primaryBtn } from "@/lib/ui"
+import { toast } from 'sonner';
+import CharCount from '@/components/ui/CharCount';
 
 export default function CourseForm({
     initial,
@@ -50,6 +52,7 @@ export default function CourseForm({
                 ? await api.patch<{ id: string }>(`/courses/${initial.id}`, body)
                 : await api.post<{ id: string }>('/courses', body)
             setSaved(true)
+            toast.success(initial ? 'Course saved' : 'Course created')
             await onSaved(res.data.id)    
         }catch (err){
             setError(getErrorMessage(err))
@@ -74,6 +77,7 @@ export default function CourseForm({
           onChange={(e) => setTitle(e.target.value)}
           className={`${inputClass} mt-1`}
         />
+        <CharCount value={title} max={120} />
       </label>
 
       <label className={labelClass}>
@@ -86,6 +90,7 @@ export default function CourseForm({
           onChange={(e) => setDescription(e.target.value)}
           className={`${inputClass} mt-1`}
         />
+        <CharCount value={description} max={5000} />
       </label>
 
       <div className="grid gap-4 sm:grid-cols-2">
@@ -126,11 +131,16 @@ export default function CourseForm({
         Thumbnail URL (optional, http/https)
         <input
           type="url"
+          maxLength={500}
           value={thumbnailUrl}
           onChange={(e) => setThumbnailUrl(e.target.value)}
           placeholder="https://..."
           className={`${inputClass} mt-1`}
         />
+        <CharCount value={thumbnailUrl} max={500} />
+        <span className="mt-1 block text-xs font-normal text-slate-500">
+            Use a direct image link (ending in .jpg, .png or .webp). Video page links will not work.
+        </span>
       </label>
 
       <button type="submit" disabled={busy} className={primaryBtn}>

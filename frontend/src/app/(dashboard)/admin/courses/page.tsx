@@ -1,12 +1,14 @@
 'use client';
 
-import { ChevronDown, ChevronUp } from 'lucide-react';
+import { ChevronDown, ChevronUp, CheckCircle2  } from 'lucide-react';
 import Link from 'next/link';
 import { useCallback, useEffect, useState } from 'react';
 import StatusBadge from '@/components/StatusBadge';
 import { api, getErrorMessage } from '@/lib/api';
 import type { Course, CourseDetails, CourseStatus, Paginated } from '@/lib/types';
 import { primaryBtn, secondaryBtn } from '@/lib/ui';
+import { useConfirm } from '@/components/ui/ConfirmDialog';
+import EmptyState from '@/components/ui/EmptyState';
 
 type Row = Course & { _count?: { lessons: number } }
 
@@ -30,6 +32,7 @@ function CourseRow({
     const [details, setDeatils] = useState<CourseDetails | null>(null)
     const [busy, setBusy] = useState(false)
     const [error, setError] = useState('')
+    const confirm = useConfirm()
 
     async function toggle(){
         const next = !open
@@ -45,7 +48,16 @@ function CourseRow({
     }
 
     async function change(action: Action){
-        if(action.confirm && !window.confirm(action.confirm)) return
+        if(action.confirm){
+          const ok = await confirm({
+            title: 'Please confirm',
+            message: action.confirm,
+            confirmLabel: action.label,
+            danger: action.to === 'ARCHIVED',
+          })
+
+          if(!ok) return
+        }
         setBusy(true)
         setError('')
         try {
@@ -62,7 +74,7 @@ function CourseRow({
       <div className="flex flex-wrap items-start justify-between gap-3">
         <div>
           <div className="flex items-center gap-2">
-            <h3 className="font-semibold">{course.title}</h3>
+            <h3 title={course.title} className="line-clamp-1 max-w-md font-semibold">{course.title}</h3>
             <StatusBadge status={course.status} />
           </div>
           <p className="mt-1 text-xs text-slate-500">
@@ -162,9 +174,11 @@ export default function AdminCoursesPage(){
       {!list ? (
         <p className="text-slate-500">Loading courses...</p>
       ) : list.length === 0 ? (
-        <p className="rounded-2xl border border-dashed border-slate-300 bg-white p-10 text-center text-slate-500">
-          {tab === 'pending' ? 'No courses are waiting for approval.' : 'No published courses.'}
-        </p>
+        <EmptyState
+          icon={CheckCircle2}
+          title= {tab === 'pending' ? 'All caught up' : 'No published coursed'}
+          text= {tab === 'pending' ? 'No courses are waiting for approval.' : 'Approved courses will appear here'}
+        />
       ) : (
         <div className="space-y-4">
           {list.map((c) => (

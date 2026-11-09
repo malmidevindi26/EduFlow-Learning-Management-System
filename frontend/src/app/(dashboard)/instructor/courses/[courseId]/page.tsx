@@ -6,6 +6,7 @@ import { useManagedCourse } from '@/context/InstructorCourseContext';
 import { api, getErrorMessage } from '@/lib/api';
 import type { CourseStatus } from '@/lib/types';
 import { primaryBtn, secondaryBtn } from '@/lib/ui';
+import { useConfirm } from '@/components/ui/ConfirmDialog';
 
 const ACTIONS: Record<CourseStatus, { to: CourseStatus; label: string; primary?: boolean }[]> = {
     DRAFT: [
@@ -31,10 +32,18 @@ export default function CourseDetailsTab(){
     const{ course, reload } = useManagedCourse()
     const [busy, setBusy] = useState(false)
     const [error, setError] = useState('')
+    const confirm = useConfirm()
 
     async function change(to: CourseStatus){
-        if(to === 'ARCHIVED' && !window.confirm('Archive this course? It will disappear from the public catalogue.')){
-            return
+        if(to === 'ARCHIVED'){
+          const ok = await confirm({
+            title: 'Archive this course?',
+            message: 'It will disappear from the public catalogue.',
+            confirmLabel: 'Archive',
+            danger: true
+          })
+
+          if(!ok) return
         }
     setBusy(true)
     setError('')

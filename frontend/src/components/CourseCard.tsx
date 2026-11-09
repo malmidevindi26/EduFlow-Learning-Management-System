@@ -1,6 +1,7 @@
 import { BookOpen } from "lucide-react";
 import Link from "next/link";
 import type { Course } from "@/lib/types";
+import Thumbnail from '@/components/ui/Thumbnail';
 
 const levelStyle: Record<Course['level'], string> = {
     BEGINNER: 'bg-emerald-50 text-emerald-700',
@@ -25,13 +26,7 @@ export default function CourseCard({ course }: { course: Course }){
       href={`/courses/${course.id}`}
       className="group flex flex-col overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-sm transition hover:-translate-y-1 hover:shadow-lg"
     >
-      {course.thumbnailUrl ? (
-        <img src={course.thumbnailUrl} alt={course.title} className="h-40 w-full object-cover" />
-      ) : (
-        <div className={`flex h-40 items-center justify-center bg-gradient-to-br ${gradient} text-white`}>
-          <BookOpen size={44} className="opacity-90" />
-        </div>
-      )}
+      <Thumbnail src={course.thumbnailUrl} title={course.title} gradient={gradient} />
 
       <div className="flex flex-1 flex-col gap-2 p-5">
         <div className="flex items-center justify-between text-xs">
@@ -41,7 +36,7 @@ export default function CourseCard({ course }: { course: Course }){
           </span>
         </div>
 
-        <h3 className="font-semibold leading-snug transition group-hover:text-blue-600">{course.title}</h3>
+        <h3 title={course.title} className="line-clamp-2 font-semibold leading-snug transition group-hover:text-blue-600">{course.title}</h3>
         <p className="line-clamp-2 text-sm text-slate-600">{course.description}</p>
 
         <div className="mt-auto flex items-center gap-2 border-t border-slate-100 pt-3">

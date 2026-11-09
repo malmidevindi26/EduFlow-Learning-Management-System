@@ -8,6 +8,8 @@ import { fileHref } from '@/lib/files';
 import type { SubmissionWithStudent } from '@/lib/types';
 import { inputClass, labelClass, primaryBtn } from '@/lib/ui';
 import DownloadButton from '@/components/DownloadButton';
+import { toast } from 'sonner';
+import CharCount from '@/components/ui/CharCount';
 
 export default function GradeCard({
     submission,
@@ -39,6 +41,7 @@ export default function GradeCard({
                feedback: feedback.trim() || undefined,
             });
             await onGraded();
+            toast.success('Grade saved')
         } catch (error) {
             setError(getErrorMessage(error))
         }finally{
@@ -92,6 +95,7 @@ export default function GradeCard({
         <label className={labelClass}>
           Feedback
           <input maxLength={2000} value={feedback} onChange={(e) => setFeedback(e.target.value)} className={`${inputClass} mt-1`} />
+          <CharCount value={feedback} max={120} />
         </label>
         <button type="submit" disabled={busy} className={primaryBtn}>
           {busy ? 'Saving...' : graded ? 'Update grade' : 'Save grade'}

@@ -3,7 +3,8 @@
 A full-stack LMS where instructors publish courses, students learn and submit work,
 and admins manage the platform.
 
-**Stack:** Next.js 15 (App Router), NestJS 11, PostgreSQL 16, Prisma ORM, JWT auth, Tailwind CSS.
+**Stack:** Next.js 15 (App Router), NestJS 11, PostgreSQL 16, Prisma ORM, JWT auth,
+Tailwind CSS 4, Sonner (toasts), Lucide (icons).
 
 ## Features
 
@@ -14,6 +15,9 @@ and admins manage the platform.
 - **Admin:** platform statistics, user management (role, activate/deactivate), categories, course approval workflow
 - **Course workflow:** Draft, Pending, Published, Archived (only admins can publish)
 - **API docs:** Swagger UI at `/docs`
+
+- **Modern UI:** responsive sidebar dashboards, split-screen login, toast notifications,
+  skeleton loading, confirmation dialogs, tooltips, character counters with live input validation
 
 ## Setup
 
@@ -64,3 +68,5 @@ Unique constraints prevent duplicate enrollments, submissions and reviews.
 `main` holds stable releases, `dev` is the integration branch, and every change is built on a
 `feature/*`, `fix/*` or `chore/*` branch created from `dev` and merged through a Pull Request.
 Commits follow Conventional Commits.
+
+- Downloads go through public random-name URLs (no per-user file access control)

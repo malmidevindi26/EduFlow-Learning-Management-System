@@ -8,6 +8,8 @@ import { useEnrollment } from '@/hooks/useEnrollment';
 import { api, getErrorMessage } from '@/lib/api';
 import type { ReviewsResponse } from '@/lib/types';
 import { toast } from 'sonner';
+import CharCount from '@/components/ui/CharCount';
+import { useConfirm } from '@/components/ui/ConfirmDialog';
 
 export default function ReviewSection({
     courseId,
@@ -19,6 +21,7 @@ export default function ReviewSection({
     const router = useRouter()
     const { user } = useAuth()
     const { enrollment } = useEnrollment(courseId)
+    const confirm = useConfirm()
 
     const mine = user ? reviews?.items.find((r) => r.user.id === user.id) : undefined
     const [rating, setRating] = useState(0)
@@ -62,7 +65,17 @@ export default function ReviewSection({
     }
 
     async function handleDelete(){
-        if(!mine || !window.confirm('Delete your review?')) return
+        if(!mine) return
+
+        const ok = await confirm({
+          title: 'Delete your review?',
+          message: 'This cannot be undone.',
+          confirmLabel: 'Delete',
+          danger: true
+        })
+
+        if(!ok) return
+
         setBusy(true)
         try {
             await api.delete(`/reviews/${mine.id}`)
@@ -97,7 +110,8 @@ export default function ReviewSection({
               </button>
             ))}
           </div>
-          <textarea
+          <div>
+            <textarea
             value={comment}
             onChange={(e) => setComment(e.target.value)}
             rows={3}
@@ -105,6 +119,8 @@ export default function ReviewSection({
             placeholder="Share your experience (optional)"
             className="w-full rounded-lg border border-slate-300 bg-white px-3 py-2 text-sm outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-100"
           />
+          <CharCount value={comment} max={1000} />
+          </div>
           {error && <p className="mt-2 text-sm text-red-600">{error}</p>}
           <div className="mt-3 flex items-center gap-3">
             <button

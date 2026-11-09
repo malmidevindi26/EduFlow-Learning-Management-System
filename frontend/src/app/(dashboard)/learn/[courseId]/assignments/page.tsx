@@ -8,6 +8,8 @@ import LearnHeader from '@/components/LearnHeader';
 import { useLearnCourse } from '@/hooks/useLearnCourse';
 import { api, getErrorMessage } from '@/lib/api';
 import type { Assignment, MySubmission } from '@/lib/types';
+import { ClipboardList } from 'lucide-react';
+import EmptyState from '@/components/ui/EmptyState';
 
 
 export default function AssignmentsPage(){
@@ -56,9 +58,11 @@ export default function AssignmentsPage(){
       <LearnHeader courseId={courseId} title={course.title} progress={progress} active="assignments" />
 
       {assignments.length === 0 ? (
-        <p className="rounded-2xl bg-white p-8 text-center text-slate-500 shadow">
-          No assignments for this course yet.
-        </p>
+        <EmptyState
+          icon={ClipboardList}
+          title="No assignments"
+          text="This course has none yet."
+        />
       ) : (
         <div className="space-y-5">
           {assignments.map((a) => (

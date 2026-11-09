@@ -1,6 +1,6 @@
 'use client';
 
-import { ChevronLeft } from 'lucide-react';
+import { ChevronLeft, Inbox } from 'lucide-react';
 import Link from 'next/link';
 import { useParams } from 'next/navigation';
 import { useCallback, useEffect, useState } from 'react';
@@ -8,6 +8,7 @@ import GradeCard from '@/components/instructor/GradeCard';
 import { api, getErrorMessage } from '@/lib/api';
 import { formatDateTime } from '@/lib/date';
 import type { Assignment, SubmissionWithStudent } from '@/lib/types';
+import EmptyState from '@/components/ui/EmptyState';
 
 export default function SubmissionsPage(){
     const { courseId, assignmentId } = useParams<{ courseId: string; assignmentId: string }>();
@@ -62,9 +63,11 @@ export default function SubmissionsPage(){
       </div>
 
       {submissions.length === 0 ? (
-        <p className="rounded-2xl border border-dashed border-slate-300 bg-white p-10 text-center text-slate-500">
-          No submissions yet.
-        </p>
+        <EmptyState
+          icon={Inbox}
+          title="No submissions yet"
+          text="Submissions will appear here."
+        />
       ) : (
         submissions.map((s) => (
           <GradeCard key={s.id} submission={s} maxMarks={assignment.maxMarks} onGraded={load} />

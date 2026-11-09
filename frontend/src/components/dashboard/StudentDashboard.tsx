@@ -8,6 +8,8 @@ import { api, getErrorMessage } from '@/lib/api';
 import type { EnrollmentItem, MySubmission } from '@/lib/types';
 import DashboardSkeleton from '@/components/ui/DashboardSkeleton';
 import StatCard, { STAT_TONES } from '@/components/ui/StatCard';
+import EmptyState from '@/components/ui/EmptyState';
+import { Compass } from 'lucide-react';
 
 export default function StudentDashboard(){
     const [enrollments, setEnrollments] = useState<EnrollmentItem[] | null>(null)
@@ -61,22 +63,30 @@ export default function StudentDashboard(){
       <section>
         <h2 className="mb-4 text-xl font-bold">My courses</h2>
         {enrollments.length === 0 ? (
-          <div className="rounded-2xl border border-dashed border-slate-300 bg-white p-12 text-center">
-            <p className="font-medium">You have not enrolled in any course yet</p>
-            <Link
-              href="/courses"
-              className="mt-4 inline-block rounded-lg bg-blue-600 px-5 py-2 text-sm font-medium text-white hover:bg-blue-700"
-            >
-              Browse courses
-            </Link>
-          </div>
+          <EmptyState
+            icon={Compass}
+            title="No courses yet"
+            text="Enroll in a course and it will show up here."
+            action={
+              <Link
+                href="/courses"
+                className="inline-block rounded-lg bg-blue-600 px-5 py-2 text-sm font-medium text-white hover:bg-blue-700"
+              >
+                Browse courses
+              </Link>
+            }
+              />
         ) : (
           <div className="grid gap-5 md:grid-cols-2">
             {enrollments.map((e) => (
               <div key={e.id} className="flex flex-col rounded-2xl border border-slate-200 bg-white p-5 shadow-sm">
                 <p className="text-xs text-slate-500">{e.course.category.name}</p>
-                <Link href={`/courses/${e.course.id}`} className="mt-1 font-semibold hover:text-blue-600">
-                  {e.course.title}
+                <Link
+                    href={`/courses/${e.course.id}`}
+                    title={e.course.title}
+                    className="mt-1 line-clamp-2 font-semibold hover:text-blue-600"
+                >
+                    {e.course.title}
                 </Link>
                 <p className="text-xs text-slate-500">By {e.course.instructor.name}</p>
 

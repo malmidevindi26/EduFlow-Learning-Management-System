@@ -7,6 +7,7 @@ import { fileHref, uploadFile } from '@/lib/files';
 import type { Assignment, Submission } from '@/lib/types';
 import DownloadButton from '@/components/DownloadButton';
 import { toast } from 'sonner';
+import CharCount from '@/components/ui/CharCount';
 
 const MAX_SIZE = 10 * 1024 * 1024;
 
@@ -144,7 +145,8 @@ export default function AssignmentCard({
               The due date has passed. You can still submit, but it will be marked as late.
             </p>
           )}
-          <textarea
+          <div>
+            <textarea
             value={answer}
             onChange={(e) => setAnswer(e.target.value)}
             rows={4}
@@ -152,6 +154,8 @@ export default function AssignmentCard({
             placeholder="Write your answer..."
             className="w-full rounded-lg border border-slate-300 px-3 py-2 text-sm outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-100"
           />
+          <CharCount value={answer} max={10000} />
+          </div>
           <div>
             <input
               type="file"

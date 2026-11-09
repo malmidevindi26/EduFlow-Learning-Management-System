@@ -1,6 +1,6 @@
 'use client';
 
-import { Clock, Pencil, Plus, Trash2 } from 'lucide-react';
+import { Clock, Pencil, Plus, Trash2, ClipboardList  } from 'lucide-react';
 import Link from 'next/link';
 import { useCallback, useEffect, useState } from 'react';
 import AssignmentForm from '@/components/instructor/AssignmentForm';
@@ -9,12 +9,15 @@ import { api, getErrorMessage } from '@/lib/api';
 import { formatDateTime } from '@/lib/date';
 import type { Assignment } from '@/lib/types';
 import { primaryBtn, secondaryBtn } from '@/lib/ui';
+import { useConfirm } from '@/components/ui/ConfirmDialog';
+import EmptyState from '@/components/ui/EmptyState';
 
 export default function AssignmentsTab(){
     const { course } = useManagedCourse();
     const [assignments, setAssignments] = useState<Assignment[] | null>(null);
     const [editing, setEditing] = useState<Assignment | 'new' | null>(null);
     const [error, setError] = useState('');
+    const confirm = useConfirm()
 
     const load = useCallback(async () => {
         try {
@@ -30,7 +33,14 @@ export default function AssignmentsTab(){
     }, [load])
 
     async function remove(a: Assignment){
-        if(!window.confirm(`Delete "${a.title}" and all its submissions?`)) return
+      const ok = await confirm({
+        title: `Delete "${a.title}"?`,
+        message: 'All submission will be deleted.',
+        confirmLabel: 'Deleted assignemnt',
+        danger: true
+      })
+      if(!ok) return
+
         try {
             await api.delete(`/assignments/${a.id}`)
             await load()
@@ -70,9 +80,11 @@ export default function AssignmentsTab(){
       {!assignments ? (
         <p className="text-slate-500">Loading...</p>
       ) : assignments.length === 0 ? (
-        <p className="rounded-2xl border border-dashed border-slate-300 bg-white p-10 text-center text-slate-500">
-          No assignments yet.
-        </p>
+         <EmptyState
+           icon={ClipboardList}
+           title="No assignments yet"
+           text="Create one for your students."
+         />
       ) : (
         <div className="space-y-4">
           {assignments.map((a) => (

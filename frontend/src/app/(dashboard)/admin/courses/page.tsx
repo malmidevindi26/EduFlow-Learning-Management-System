@@ -1,12 +1,14 @@
 'use client';
 
-import { ChevronDown, ChevronUp } from 'lucide-react';
+import { ChevronDown, ChevronUp, CheckCircle2  } from 'lucide-react';
 import Link from 'next/link';
 import { useCallback, useEffect, useState } from 'react';
 import StatusBadge from '@/components/StatusBadge';
 import { api, getErrorMessage } from '@/lib/api';
 import type { Course, CourseDetails, CourseStatus, Paginated } from '@/lib/types';
 import { primaryBtn, secondaryBtn } from '@/lib/ui';
+import { useConfirm } from '@/components/ui/ConfirmDialog';
+import EmptyState from '@/components/ui/EmptyState';
 
 type Row = Course & { _count?: { lessons: number } }
 
@@ -30,6 +32,7 @@ function CourseRow({
     const [details, setDeatils] = useState<CourseDetails | null>(null)
     const [busy, setBusy] = useState(false)
     const [error, setError] = useState('')
+    const confirm = useConfirm()
 
     async function toggle(){
         const next = !open
@@ -45,7 +48,16 @@ function CourseRow({
     }
 
     async function change(action: Action){
-        if(action.confirm && !window.confirm(action.confirm)) return
+        if(action.confirm){
+          const ok = await confirm({
+            title: 'Please confirm',
+            message: action.confirm,
+            confirmLabel: action.label,
+            danger: action.to === 'ARCHIVED',
+          })
+
+          if(!ok) return
+        }
         setBusy(true)
         setError('')
         try {
@@ -162,9 +174,11 @@ export default function AdminCoursesPage(){
       {!list ? (
         <p className="text-slate-500">Loading courses...</p>
       ) : list.length === 0 ? (
-        <p className="rounded-2xl border border-dashed border-slate-300 bg-white p-10 text-center text-slate-500">
-          {tab === 'pending' ? 'No courses are waiting for approval.' : 'No published courses.'}
-        </p>
+        <EmptyState
+          icon={CheckCircle2}
+          title="All caught up"
+          text="No courses are waiting for approval."
+        />
       ) : (
         <div className="space-y-4">
           {list.map((c) => (

@@ -1,6 +1,6 @@
 'use client';
 
-import { BookOpen, ClipboardCheck, Plus, Star, Users } from 'lucide-react';
+import { BookOpen, ClipboardCheck, Plus, Star, Users, PlusCircle } from 'lucide-react';
 import Link from 'next/link';
 import { useEffect, useState } from 'react';
 import StatusBadge from '@/components/StatusBadge';
@@ -9,6 +9,7 @@ import type { InstructorStats, MyCourse } from '@/lib/types';
 import { primaryBtn } from '@/lib/ui';
 import DashboardSkeleton from '@/components/ui/DashboardSkeleton';
 import StatCard, { STAT_TONES } from '@/components/ui/StatCard';
+import EmptyState from '@/components/ui/EmptyState';
 
 export default function InstructorDashboard() {
   const [stats, setStats] = useState<InstructorStats | null>(null)
@@ -65,12 +66,19 @@ export default function InstructorDashboard() {
         </div>
 
         {courses.length === 0 ? (
-          <div className="rounded-2xl border border-dashed border-slate-300 bg-white p-12 text-center">
-            <p className="font-medium">You have not created any course yet</p>
-            <Link href="/instructor/courses/new" className={`${primaryBtn} mt-4 inline-block`}>
-              Create your first course
-            </Link>
-          </div>
+          <EmptyState
+            icon={PlusCircle}
+            title="Create your first course"
+            text="Share what you know with students."
+            action={
+             <Link
+               href="/instructor/courses/new"
+               className={primaryBtn}
+              >
+              Create course
+             </Link>
+            }
+          />
         ) : (
           <div className="grid gap-5 md:grid-cols-2">
             {courses.map((c) => (

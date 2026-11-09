@@ -3,6 +3,12 @@ import CourseFilters from '@/components/CourseFilters';
 import Pagination from '@/components/Pagination';
 import { apiFetch } from '@/lib/server-api';
 import type { Category, Course, Paginated } from '@/lib/types';
+import { SearchX } from "lucide-react";
+import type { Metadata } from "next";
+import EmptyState from "@/components/ui/EmptyState";
+import Link from "next/link";
+
+export const metadata: Metadata = { title: 'Browse courses' };
 
 type SearchParams = Promise<{
     search? : string
@@ -61,10 +67,16 @@ export default async function CoursesPage({
       />
 
       {result.items.length === 0 ? (
-        <div className="rounded-2xl border border-dashed border-slate-300 bg-white p-12 text-center">
-          <p className="font-medium">No courses found</p>
-          <p className="mt-1 text-sm text-slate-500">Try a different search or clear the filters.</p>
-        </div>
+        <EmptyState
+          icon={SearchX}
+          title="No courses found"
+          text="Try a different search term or clear the filters."
+          action={
+            <Link href="/courses" className="text-sm font-medium text-blue-600 hover:underline">
+              Clear all filters
+            </Link>
+          }
+        />
       ) : (
         <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
           {result.items.map((course) => (
